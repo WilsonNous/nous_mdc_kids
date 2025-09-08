@@ -5,27 +5,98 @@
     font-family: 'Arial', sans-serif;
 }
 
+/* ✅ Correção 1: Remover flex do body — deixar fluxo normal */
 body {
-    background: white; /* Fundo branco, como você pediu */
+    background: white;
+    color: #003366;
     min-height: 100vh;
-    padding: 20px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #003366; /* Texto principal em azul escuro */
+    padding: 0; /* Remover padding aqui, vamos controlar no container */
 }
 
-.container {
+/* ✅ Correção 2: Cabeçalho fixo no topo com position: fixed */
+.header-unificado {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #1a253d;
+    color: white;
+    padding: 15px 30px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    position: fixed; /* ⬅️ Mudei de sticky para fixed para garantir */
+    top: 0;
+    left: 0;
+    right: 0; /* ⬅️ Ocupa toda a largura */
+    z-index: 1000;
     width: 100%;
-    max-width: 500px;
+    max-width: 1200px;
+    margin: 0 auto;
 }
+
+.header-logo h2 {
+    margin: 0;
+    font-size: 1.3rem;
+    font-weight: 600;
+}
+
+.header-logo small {
+    font-size: 0.8rem;
+    opacity: 0.8;
+}
+
+.logo {
+    height: 50px;
+    border-radius: 8px;
+}
+
+.menu-horizontal {
+    display: flex;
+    gap: 20px;
+}
+
+.menu-horizontal .menu-item {
+    color: white;
+    text-decoration: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-weight: 500;
+    transition: background 0.3s;
+}
+
+.menu-horizontal .menu-item:hover,
+.menu-horizontal .menu-item.active {
+    background: #2b3e57;
+}
+
+/* ✅ Correção 3: Container padrão — ajustado para não conflitar */
+.container {
+    max-width: 1200px;
+    margin: 120px auto 0; /* ⬅️ Margem superior maior para não ficar atrás do header */
+    padding: 20px;
+    width: 100%;
+}
+
+/* ✅ Container específico para formulários (ex: index.html) */
+.container-form {
+    max-width: 500px;
+    margin: 120px auto 0;
+    padding: 20px;
+}
+
+/* ✅ Container para layouts mais largos (ex: alertas, listas) */
+.container-wide {
+    max-width: 100%;
+    margin: 120px auto 0;
+    padding: 20px 40px;
+}
+
+/* ✅ Estilos restantes (sem alteração, apenas organização) */
 
 .card {
     background: white;
     padding: 30px;
     border-radius: 15px;
     box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-    border: 2px solid #007BFF; /* Borda azul */
+    border: 2px solid #007BFF;
 }
 
 .header h1 {
@@ -43,7 +114,6 @@ body {
     text-align: center;
 }
 
-/* Logo no topo */
 .logo-container {
     text-align: center;
     margin-bottom: 20px;
@@ -68,12 +138,12 @@ input, select, textarea, button {
 
 input:focus, select:focus, textarea:focus {
     outline: none;
-    border-color: #E6007A; /* Rosa vivo ao focar */
+    border-color: #E6007A;
     box-shadow: 0 0 0 3px rgba(230, 0, 122, 0.1);
 }
 
 button {
-    background: #E6007A; /* Rosa vivo */
+    background: #E6007A;
     color: white;
     font-weight: bold;
     cursor: pointer;
@@ -147,7 +217,6 @@ h3 {
     background: #0056b3;
 }
 
-/* Menu de navegação */
 .menu {
     display: flex;
     justify-content: center;
@@ -175,70 +244,4 @@ h3 {
 
 .menu-item.active {
     background: #E6007A;
-}
-
-/* ✅ CABEÇALHO UNIFICADO */
-.header-unificado {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    background: #1a253d;
-    color: white;
-    padding: 15px 30px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-    position: sticky;
-    top: 0;
-    z-index: 1000;
-    width: 100%;
-    max-width: 1200px;
-    margin: 0 auto;
-}
-
-.header-logo {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-}
-
-.header-logo h2 {
-    margin: 0;
-    font-size: 1.3rem;
-    font-weight: 600;
-}
-
-.header-logo small {
-    font-size: 0.8rem;
-    opacity: 0.8;
-}
-
-.logo {
-    height: 50px;
-    border-radius: 8px;
-}
-
-.menu-horizontal {
-    display: flex;
-    gap: 20px;
-}
-
-.menu-horizontal .menu-item {
-    color: white;
-    text-decoration: none;
-    padding: 8px 16px;
-    border-radius: 6px;
-    font-weight: 500;
-    transition: background 0.3s;
-}
-
-.menu-horizontal .menu-item:hover,
-.menu-horizontal .menu-item.active {
-    background: #2b3e57;
-}
-
-/* ✅ AJUSTA O CONTAINER PARA NÃO FICAR ABAIXO DO CABEÇALHO FIXO */
-.container {
-    margin-top: 100px; /* Evita que o conteúdo fique escondido atrás do header */
-    padding: 20px;
-    max-width: 1200px;
-    margin: 0 auto;
 }
