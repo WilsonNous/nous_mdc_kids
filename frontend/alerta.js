@@ -7,7 +7,7 @@ async function carregarCriancas() {
     listaDiv.innerHTML = '<p>Carregando...</p>';
 
     try {
-        const response = await fetch('http://localhost:5000/listar-criancas');
+        const response = await fetch('/listar-criancas');
         const data = await response.json();
 
         if (!data.success) throw new Error(data.error);
@@ -37,7 +37,7 @@ function selecionarCrianca(crianca) {
     document.getElementById('mensagemCheckin').textContent = `Check-in registrado para ${crianca.nome}!`;
     
     // Envia check-in para o backend
-    fetch('http://localhost:5000/checkin', {
+    fetch('/checkin', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -63,7 +63,7 @@ document.getElementById('btnAlerta').addEventListener('click', async function() 
     btn.textContent = 'Enviando...';
 
     try {
-        const response = await fetch('http://localhost:5000/checkin', {
+        const response = await fetch('/checkin', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
