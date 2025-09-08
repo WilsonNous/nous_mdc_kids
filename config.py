@@ -1,5 +1,6 @@
 import mysql.connector
 from mysql.connector import Error
+from database import get_db_connection, close_db_connection
 
 def get_db_connection():
     try:
