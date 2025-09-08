@@ -1,40 +1,63 @@
-from flask import Flask, request, jsonify
-from config import get_db_connection
-import requests  # para enviar WhatsApp depois
+import requests
+import os
+from dotenv import load_dotenv
 
-app = Flask(__name__)
+load_dotenv()
 
-@app.route('/checkin', methods=['POST'])
-def registrar_checkin():
-    data = request.json
-    crianca_id = data.get('crianca_id')
-    status = data.get('status', 'presente')
-    observacao = data.get('observacao', '')
+ZAPI_TOKEN = os.getenv("ZAPI_TOKEN")
+ZAPI_INSTANCE = os.getenv("ZAPI_INSTANCE")
 
+def enviar_whatsapp_alerta(crianca_id, motivo="Está precisando de você"):
     conn = get_db_connection()
-    if conn:
-        cursor = conn.cursor()
-        cursor.execute(
-            "INSERT INTO checkins (crianca_id, status, observacao_alerta) VALUES (%s, %s, %s)",
-            (crianca_id, status, observacao)
-        )
-        conn.commit()
-        checkin_id = cursor.lastrowid
+    if not conn:
+        print("Erro ao conectar ao banco")
+        return False
+
+    cursor = conn.cursor(dictionary=True)
+    
+    # Busca dados da criança
+    cursor.execute("SELECT nome FROM criancas WHERE id = %s", (crianca_id,))
+    crianca = cursor.fetchone()
+    if not crianca:
         cursor.close()
         conn.close()
+        return False
 
-        # Se for alerta, envia WhatsApp (vamos implementar depois)
-        if status == 'alerta_enviado':
-            enviar_whatsapp_alerta(crianca_id, observacao)
+    # Busca responsáveis
+    cursor.execute("SELECT nome, telefone_whatsapp FROM responsaveis WHERE crianca_id = %s", (crianca_id,))
+    responsaveis = cursor.fetchall()
+    cursor.close()
+    conn.close()
 
-        return jsonify({"success": True, "checkin_id": checkin_id}), 201
-    else:
-        return jsonify({"error": "Erro no banco"}), 500
+    if not responsaveis:
+        return False
 
-def enviar_whatsapp_alerta(crianca_id, motivo):
-    # Função que busca os responsáveis e envia mensagem
-    # Vamos implementar na próxima etapa!
-    pass
+    for resp in responsaveis:
+        # Formata telefone: garante que começa com 55
+        telefone = resp['telefone_whatsapp']
+        if not telefone.startswith('55'):
+            telefone = '55' + telefone
 
-if __name__ == '__main__':
-    app.run(debug=True)
+        mensagem = f"🔔 *Igreja Mais de Cristo - Cultinho Kids*\n\n" \
+                   f"Oi, {resp['nome']}! Sua(o) filha(o) *{crianca['nome']}* está precisando de você aqui no cultinho.\n" \
+                   f"Motivo: {motivo}\n\n" \
+                   f"📍 Pode vir até a Sala Kids? Estamos com ela(e) com carinho!\n\n" \
+                   f"❤️ Equipe Mais de Cristo Canasvieiras"
+
+        url = f"https://api.z-api.io/instances/{ZAPI_INSTANCE}/token/{ZAPI_TOKEN}/send-messages"
+        payload = {
+            "phone": telefone,
+            "message": mensagem
+        }
+        headers = {'Content-Type': 'application/json'}
+
+        try:
+            response = requests.post(url, json=payload, headers=headers, timeout=10)
+            if response.status_code == 200 or response.status_code == 201:
+                print(f"Mensagem enviada para {resp['nome']} ({telefone})")
+            else:
+                print(f"Erro ao enviar para {telefone}: {response.text}")
+        except Exception as e:
+            print(f"Erro na requisição: {e}")
+
+    return True
