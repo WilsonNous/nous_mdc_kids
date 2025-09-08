@@ -27,7 +27,7 @@ document.getElementById('formCadastro').addEventListener('submit', async functio
 
     try {
         // Primeiro, cadastra a criança
-        const responseCrianca = await fetch('http://localhost:5000/cadastrar-crianca', {
+        const responseCrianca = await fetch('/cadastrar-crianca', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(crianca)
@@ -42,7 +42,7 @@ document.getElementById('formCadastro').addEventListener('submit', async functio
         // Depois, cadastra os responsáveis
         for (const resp of responsaveis) {
             resp.crianca_id = dataCrianca.crianca_id;
-            const responseResp = await fetch('http://localhost:5000/cadastrar-responsavel', {
+            const responseResp = await fetch('/cadastrar-responsavel', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(resp)
