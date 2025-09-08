@@ -121,21 +121,47 @@ def registrar_checkin():
 # ✅ 9. ROTA: CADASTRAR CRIANÇA
 @app.route('/cadastrar-crianca', methods=['POST'])
 def cadastrar_crianca():
-    data = request.json
-    conn = get_db_connection()
-    if not conn:
-        return jsonify({"error": "Erro no banco"}), 500
+    try:
+        data = request.json
+        print("📥 Dados recebidos:", data)  # Log para debug
 
-    cursor = conn.cursor()
-    cursor.execute(
-        "INSERT INTO criancas (nome, data_nascimento, turma, observacoes) VALUES (%s, %s, %s, %s)",
-        (data['nome'], data['data_nascimento'], data['turma'], data.get('observacoes', ''))
-    )
-    conn.commit()
-    crianca_id = cursor.lastrowid
-    cursor.close()
-    conn.close()
-    return jsonify({"success": True, "crianca_id": crianca_id})
+        if not data:
+            return jsonify({"error": "Nenhum dado recebido"}), 400
+
+        conn = get_db_connection()
+        if not conn:
+            print("❌ Falha ao conectar ao banco de dados")
+            return jsonify({"error": "Erro ao conectar ao banco"}), 500
+
+        cursor = conn.cursor()
+        
+        # Log dos valores que serão inseridos
+        print(f"📝 Inserindo: nome={data.get('nome')}, data_nasc={data.get('data_nascimento')}, turma={data.get('turma')}")
+
+        cursor.execute(
+            "INSERT INTO criancas (nome, data_nascimento, turma, observacoes) VALUES (%s, %s, %s, %s)",
+            (
+                data.get('nome'),
+                data.get('data_nascimento'),
+                data.get('turma'),
+                data.get('observacoes', '')
+            )
+        )
+        
+        conn.commit()
+        crianca_id = cursor.lastrowid
+        print(f"✅ Criança cadastrada com ID: {crianca_id}")
+        
+        cursor.close()
+        conn.close()
+        
+        return jsonify({"success": True, "crianca_id": crianca_id})
+
+    except Exception as e:
+        print(f"🔥 ERRO AO CADASTRAR CRIANÇA: {str(e)}")
+        import traceback
+        traceback.print_exc()
+        return jsonify({"error": f"Erro interno: {str(e)}"}), 500
 
 # ✅ 10. ROTA: CADASTRAR RESPONSÁVEL
 @app.route('/cadastrar-responsavel', methods=['POST'])
