@@ -7,25 +7,38 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="container">
-        <!-- ✅ MENU DE NAVEGAÇÃO -->
-        <div class="menu">
+    <!-- ✅ CABEÇALHO UNIFICADO -->
+    <header class="header-unificado">
+        <div class="header-logo">
+            <img src="logo.png" alt="Logo Ministério Infantil" class="logo">
+            <h2>Ministério Infantil</h2>
+        </div>
+        <nav class="menu-horizontal">
             <a href="index.html" class="menu-item">📝 Cadastrar</a>
             <a href="checkin.html" class="menu-item active">✅ Check-in</a>
             <a href="alerta-manual.html" class="menu-item">🔔 Alerta Manual</a>
             <a href="relatorios.html" class="menu-item">📊 Relatórios</a>
-        </div>
+        </nav>
+    </header>
 
+    <div class="container">
         <div class="card">
             <div class="header">
                 <h1>✅ Check-in no Cultinho Kids</h1>
-                <p>Selecione a criança e registre sua presença</p>
+                <p>Selecione a criança ou cadastre uma nova</p>
             </div>
 
+            <!-- ✅ BOTÃO PARA CADASTRAR NOVO -->
+            <button id="btnCadastrarNova" class="btn-cadastrar" style="margin-bottom: 20px;">
+                ➕ Cadastrar Nova Criança
+            </button>
+
+            <!-- ✅ ÁREA DE LISTA -->
             <div id="listaCriancas">
                 <p>Carregando lista de crianças...</p>
             </div>
 
+            <!-- ✅ ÁREA DE ALERTA (só aparece após check-in) -->
             <div id="areaAlerta" style="display:none; margin-top: 30px; padding: 20px; border: 2px dashed #e74c3c; border-radius: 10px;">
                 <h3>🚨 A criança não está se adaptando?</h3>
                 <p>Selecione o motivo e avise os pais:</p>
@@ -43,19 +56,6 @@
         </div>
     </div>
 
-    <script src="alerta.js"></script>
+    <script src="checkin.js"></script>
 </body>
-    <!-- ✅ CABEÇALHO FIXO UNIFICADO -->
-<header class="header-unificado">
-    <div class="header-logo">
-        <img src="logo.png" alt="Logo Ministério Infantil" class="logo">
-        <h2>Ministério Infantil</h2>
-    </div>
-    <nav class="menu-horizontal">
-        <a href="index.html" class="menu-item">📝 Cadastrar</a>
-        <a href="checkin.html" class="menu-item">✅ Check-in</a>
-        <a href="alerta-manual.html" class="menu-item">🔔 Alerta Manual</a>
-        <a href="relatorios.html" class="menu-item">📊 Relatórios</a>
-    </nav>
-</header>
 </html>
