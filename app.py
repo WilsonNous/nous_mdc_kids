@@ -201,7 +201,86 @@ def listar_criancas():
     cursor.close()
     conn.close()
     return jsonify({"success": True, "criancas": criancas})
+# ✅ 13. ROTA: WEBHOOK DA Z-API — RECEBE EVENTOS DO WHATSAPP
+@app.route('/webhook/zapi', methods=['POST'])
+def webhook_zapi():
+    try:
+        payload = request.get_json()
+        if not payload:
+            print("❌ Webhook: payload vazio")
+            return jsonify({"status": "error", "message": "Payload vazio"}), 400
 
+        event_type = payload.get('type')
+
+        # ✅ LOG DO EVENTO RECEBIDO
+        print(f"📩 Webhook recebido | Tipo: {event_type}")
+        print(f"📦 Payload: {payload}")
+
+        # 🔍 Se for mensagem recebida
+        if event_type == 'message.received':
+            sender = payload.get('sender')  # telefone no formato 5511999999999
+            message_text = payload.get('body', '').strip()
+
+            print(f"💬 Mensagem de {sender}: {message_text}")
+
+            # ✅ AQUI VOCÊ PODE INTEGRAR COM SEU BANCO!
+            # Ex: buscar se esse telefone é de um responsável cadastrado
+            # Ex: se a mensagem for "CADASTRAR: ...", processar cadastro
+
+            # 🚧 POR ENQUANTO, SÓ LOGAMOS — mas já tá RECEBENDO!
+            # Vamos adicionar a lógica de resposta automática abaixo 👇
+
+            # ✅ Responder automaticamente (opcional)
+            if message_text.lower() in ['oi', 'ola', 'olá', 'bom dia', 'boa tarde', 'boa noite']:
+                responder_whatsapp(sender, "👋 Olá! Aqui é a equipe do Cultinho Kids da Igreja Mais de Cristo. Como podemos ajudar?")
+
+        # ✅ Se for status de mensagem (entregue, lida etc)
+        elif event_type == 'message.status':
+            message_id = payload.get('messageId')
+            status = payload.get('status')
+            print(f"📬 Status da mensagem {message_id}: {status}")
+
+        # ✅ Se for atualização de conexão
+        elif event_type == 'connection.update':
+            connection_status = payload.get('status')
+            print(f"🔌 Conexão WhatsApp: {connection_status}")
+
+        # ✅ SEMPRE responda com 200 OK — senão a Z-API reenvia!
+        return jsonify({"status": "success"}), 200
+
+    except Exception as e:
+        print(f"🔥 ERRO no webhook: {str(e)}")
+        return jsonify({"status": "error", "message": str(e)}), 500
+
+# ✅ FUNÇÃO AUXILIAR: RESPONDER MENSAGEM VIA Z-API
+def responder_whatsapp(telefone, mensagem):
+    """Envia uma mensagem de resposta via Z-API"""
+    if not ZAPI_TOKEN or not ZAPI_INSTANCE:
+        print("❌ Tokens da Z-API não configurados")
+        return False
+
+    url = f"https://api.z-api.io/instances/{ZAPI_INSTANCE}/messages/text"
+    headers = {
+        "Client-Token": ZAPI_TOKEN,
+        "Content-Type": "application/json"
+    }
+    payload = {
+        "phone": telefone,
+        "message": mensagem
+    }
+
+    try:
+        response = requests.post(url, json=payload, headers=headers, timeout=10)
+        if response.status_code in [200, 201]:
+            print(f"✅ Resposta enviada para {telefone}")
+            return True
+        else:
+            print(f"❌ Erro ao responder: {response.text}")
+            return False
+    except Exception as e:
+        print(f"❌ Erro na requisição de resposta: {e}")
+        return False
+        
 # ✅ 12. RODA LOCALMENTE (Render usa Gunicorn — ignora isso em produção)
 if __name__ == '__main__':
     port = int(os.getenv('PORT', 5000))
