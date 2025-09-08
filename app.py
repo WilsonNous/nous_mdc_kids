@@ -2,7 +2,7 @@ import requests
 import os
 from dotenv import load_dotenv
 from flask import Flask, request, jsonify, send_from_directory
-from config import get_db_connection
+from database import get_db_connection, close_db_connection
 
 # ✅ 1. Carrega variáveis de ambiente
 load_dotenv()
