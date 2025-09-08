@@ -177,6 +177,62 @@ h3 {
     background: #E6007A;
 }
 
+/* ✅ CABEÇALHO UNIFICADO */
+.header-unificado {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #2c3e50;
+    color: white;
+    padding: 15px 30px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+.header-logo {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.header-logo h2 {
+    margin: 0;
+    font-size: 1.3rem;
+    font-weight: 600;
+}
+
+.logo {
+    height: 50px;
+    border-radius: 8px;
+}
+
+.menu-horizontal {
+    display: flex;
+    gap: 20px;
+}
+
+.menu-horizontal .menu-item {
+    color: white;
+    text-decoration: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-weight: 500;
+    transition: background 0.3s;
+}
+
+.menu-horizontal .menu-item:hover,
+.menu-horizontal .menu-item.active {
+    background: #34495e;
+}
+
+/* ✅ AJUSTA O CONTAINER PARA NÃO FICAR ABAIXO DO CABEÇALHO FIXO */
+.container {
+    margin-top: 100px; /* Evita que o conteúdo fique escondido atrás do header */
+    padding: 20px;
+}
+
 .menu-item.active:hover {
     background: #C6006A;
 }
