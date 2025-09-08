@@ -3,6 +3,19 @@ import os
 from dotenv import load_dotenv
 from flask import Flask, request, jsonify
 from config import get_db_connection
+from flask import send_from_directory
+
+@app.route('/')
+def home():
+    return send_from_directory('frontend', 'index.html')
+
+@app.route('/checkin')
+def checkin_page():
+    return send_from_directory('frontend', 'checkin.html')
+
+@app.route('/<path:filename>')
+def static_files(filename):
+    return send_from_directory('frontend', filename)
 
 # Carrega variáveis de ambiente
 load_dotenv()
