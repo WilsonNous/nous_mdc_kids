@@ -1,16 +1,24 @@
 import requests
 import os
 from dotenv import load_dotenv
+from flask import Flask, request, jsonify
+from config import get_db_connection
 
+# Carrega variáveis de ambiente
 load_dotenv()
 
+# ✅ INSTANCIA O FLASK — ISSO DEVE VIR ANTES DE QUALQUER @app.route!
+app = Flask(__name__)
+
+# Configurações da Z-API
 ZAPI_TOKEN = os.getenv("ZAPI_TOKEN")
 ZAPI_INSTANCE = os.getenv("ZAPI_INSTANCE")
 
+# ✅ FUNÇÃO DE ENVIO DE WHATSAPP — AGORA COM URL CORRIGIDA!
 def enviar_whatsapp_alerta(crianca_id, motivo="Está precisando de você"):
     conn = get_db_connection()
     if not conn:
-        print("Erro ao conectar ao banco")
+        print("❌ Erro ao conectar ao banco")
         return False
 
     cursor = conn.cursor(dictionary=True)
@@ -21,6 +29,7 @@ def enviar_whatsapp_alerta(crianca_id, motivo="Está precisando de você"):
     if not crianca:
         cursor.close()
         conn.close()
+        print("❌ Criança não encontrada")
         return False
 
     # Busca responsáveis
@@ -30,6 +39,7 @@ def enviar_whatsapp_alerta(crianca_id, motivo="Está precisando de você"):
     conn.close()
 
     if not responsaveis:
+        print("❌ Nenhum responsável encontrado")
         return False
 
     for resp in responsaveis:
@@ -44,6 +54,7 @@ def enviar_whatsapp_alerta(crianca_id, motivo="Está precisando de você"):
                    f"📍 Pode vir até a Sala Kids? Estamos com ela(e) com carinho!\n\n" \
                    f"❤️ Equipe Mais de Cristo Canasvieiras"
 
+        # ✅ URL CORRIGIDA — REMOVIDO O ESPAÇO APÓS "/instances/"
         url = f"https://api.z-api.io/instances/{ZAPI_INSTANCE}/token/{ZAPI_TOKEN}/send-messages"
         payload = {
             "phone": telefone,
@@ -53,14 +64,16 @@ def enviar_whatsapp_alerta(crianca_id, motivo="Está precisando de você"):
 
         try:
             response = requests.post(url, json=payload, headers=headers, timeout=10)
-            if response.status_code == 200 or response.status_code == 201:
-                print(f"Mensagem enviada para {resp['nome']} ({telefone})")
+            if response.status_code in [200, 201]:
+                print(f"✅ Mensagem enviada para {resp['nome']} ({telefone})")
             else:
-                print(f"Erro ao enviar para {telefone}: {response.text}")
+                print(f"❌ Erro ao enviar para {telefone}: {response.text}")
         except Exception as e:
-            print(f"Erro na requisição: {e}")
+            print(f"❌ Erro na requisição: {e}")
 
     return True
+
+# ✅ ROTA: CADASTRAR CRIANÇA
 @app.route('/cadastrar-crianca', methods=['POST'])
 def cadastrar_crianca():
     data = request.json
@@ -79,6 +92,7 @@ def cadastrar_crianca():
     conn.close()
     return jsonify({"success": True, "crianca_id": crianca_id})
 
+# ✅ ROTA: CADASTRAR RESPONSÁVEL
 @app.route('/cadastrar-responsavel', methods=['POST'])
 def cadastrar_responsavel():
     data = request.json
@@ -96,6 +110,7 @@ def cadastrar_responsavel():
     conn.close()
     return jsonify({"success": True})
 
+# ✅ ROTA: LISTAR CRIANÇAS
 @app.route('/listar-criancas', methods=['GET'])
 def listar_criancas():
     conn = get_db_connection()
@@ -108,3 +123,37 @@ def listar_criancas():
     cursor.close()
     conn.close()
     return jsonify({"success": True, "criancas": criancas})
+
+# ✅ ROTA: CHECK-IN (INCLUÍDA AQUI — FALTAVA NO SEU CÓDIGO!)
+@app.route('/checkin', methods=['POST'])
+def registrar_checkin():
+    data = request.json
+    crianca_id = data.get('crianca_id')
+    status = data.get('status', 'presente')
+    observacao = data.get('observacao', '')
+
+    conn = get_db_connection()
+    if not conn:
+        return jsonify({"error": "Erro ao conectar ao banco"}), 500
+
+    cursor = conn.cursor()
+    cursor.execute(
+        "INSERT INTO checkins (crianca_id, status, observacao_alerta) VALUES (%s, %s, %s)",
+        (crianca_id, status, observacao)
+    )
+    conn.commit()
+    checkin_id = cursor.lastrowid
+    cursor.close()
+    conn.close()
+
+    # Se for alerta, envia WhatsApp
+    if status == 'alerta_enviado':
+        sucesso = enviar_whatsapp_alerta(crianca_id, observacao)
+        if not sucesso:
+            return jsonify({"success": True, "checkin_id": checkin_id, "warning": "Check-in feito, mas falha ao enviar WhatsApp"}), 201
+
+    return jsonify({"success": True, "checkin_id": checkin_id}), 201
+
+# ✅ RODA LOCALMENTE (NO RENDER, O GUNICORN CUIDA DISSO)
+if __name__ == '__main__':
+    app.run(debug=True)
