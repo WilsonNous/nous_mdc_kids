@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Check-in - Kids Alerta | Mais de Cristo Canasvieiras</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <div class="header">
+                <h1>✅ Check-in no Cultinho Kids</h1>
+                <p>Selecione a criança e registre sua presença</p>
+            </div>
+
+            <div id="listaCriancas">
+                <p>Carregando lista de crianças...</p>
+            </div>
+
+            <div id="areaAlerta" style="display:none; margin-top: 30px; padding: 20px; border: 2px dashed #e74c3c; border-radius: 10px;">
+                <h3>🚨 A criança não está se adaptando?</h3>
+                <p>Selecione o motivo e avise os pais:</p>
+                <select id="motivoAlerta">
+                    <option value="Está chorando muito">Está chorando muito</option>
+                    <option value="Pediu pela mãe/pai">Pediu pela mãe/pai</option>
+                    <option value="Não quer participar">Não quer participar</option>
+                    <option value="Está com medo">Está com medo</option>
+                    <option value="Outro">Outro</option>
+                </select>
+                <button id="btnAlerta" class="btn-alerta">🔔 AVISAR PAIS AGORA</button>
+            </div>
+
+            <div id="mensagemCheckin" class="mensagem"></div>
+        </div>
+    </div>
+
+    <script src="alerta.js"></script>
+</body>
+</html>
