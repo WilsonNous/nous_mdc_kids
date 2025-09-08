@@ -3,6 +3,7 @@ import os
 from dotenv import load_dotenv
 from flask import Flask, request, jsonify, send_from_directory
 from database import get_db_connection, close_db_connection
+from datetime import datetime
 
 # ✅ 1. Carrega variáveis de ambiente
 load_dotenv()
@@ -201,6 +202,67 @@ def listar_criancas():
     cursor.close()
     conn.close()
     return jsonify({"success": True, "criancas": criancas})
+
+# ✅ 14. ROTA: RELATÓRIO COMPLETO DE CHECKINS
+@app.route('/relatorio-checkins', methods=['GET'])
+def relatorio_checkins():
+    try:
+        conn = get_db_connection()
+        if not conn:
+            return jsonify({"error": "Erro ao conectar ao banco"}), 500
+
+        cursor = conn.cursor(dictionary=True)
+
+        # ✅ 1. Total de crianças cadastradas
+        cursor.execute("SELECT COUNT(*) as total FROM criancas")
+        total_criancas = cursor.fetchone()['total']
+
+        # ✅ 2. Frequência por turma
+        cursor.execute("""
+            SELECT turma, COUNT(*) as total
+            FROM criancas
+            GROUP BY turma
+            ORDER BY turma
+        """)
+        frequencia_por_turma = cursor.fetchall()
+
+        # ✅ 3. Últimos 10 check-ins (com nome da criança e status)
+        cursor.execute("""
+            SELECT c.nome, c.turma, ch.status, ch.data_checkin, ch.observacao_alerta
+            FROM checkins ch
+            JOIN criancas c ON ch.crianca_id = c.id
+            ORDER BY ch.data_checkin DESC
+            LIMIT 10
+        """)
+        ultimos_checkins = cursor.fetchall()
+
+        # ✅ 4. Alertas recentes (últimos 5 alertas)
+        cursor.execute("""
+            SELECT c.nome, c.turma, ch.status, ch.data_checkin, ch.observacao_alerta
+            FROM checkins ch
+            JOIN criancas c ON ch.crianca_id = c.id
+            WHERE ch.status IN ('alerta_enviado', 'pai_veio', 'acalmou_sozinha')
+            ORDER BY ch.data_checkin DESC
+            LIMIT 5
+        """)
+        alertas_recentes = cursor.fetchall()
+
+        cursor.close()
+        conn.close()
+
+        return jsonify({
+            "success": True,
+            "total_criancas": total_criancas,
+            "frequencia_por_turma": frequencia_por_turma,
+            "ultimos_checkins": ultimos_checkins,
+            "alertas_recentes": alertas_recentes,
+            "gerado_em": datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+        })
+
+    except Exception as e:
+        print(f"🔥 ERRO no relatório: {str(e)}")
+        return jsonify({"error": f"Erro interno: {str(e)}"}), 500
+        
 # ✅ 13. ROTA: WEBHOOK DA Z-API — RECEBE EVENTOS DO WHATSAPP
 @app.route('/webhook/zapi', methods=['POST'])
 def webhook_zapi():
