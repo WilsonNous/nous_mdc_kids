@@ -57,6 +57,10 @@ def enviar_whatsapp_alerta(crianca_id, motivo="Está precisando de você"):
         print("❌ Nenhum responsável encontrado")
         return False
 
+    # ✅ DEBUG: Verifica se tokens estão carregados
+    print(f"🔐 ZAPI_INSTANCE: {ZAPI_INSTANCE}")
+    print(f"🔐 ZAPI_TOKEN: {ZAPI_TOKEN[:5]}...")
+
     for resp in responsaveis:
         # Formata telefone: garante que começa com 55
         telefone = resp['telefone_whatsapp']
@@ -69,13 +73,16 @@ def enviar_whatsapp_alerta(crianca_id, motivo="Está precisando de você"):
                    f"📍 Pode vir até a Sala Kids? Estamos com ela(e) com carinho!\n\n" \
                    f"❤️ Equipe Mais de Cristo Canasvieiras"
 
-        # ✅ URL CORRIGIDA — SEM ESPAÇOS!
-        url = f"https://api.z-api.io/instances/{ZAPI_INSTANCE}/token/{ZAPI_TOKEN}/send-messages"
+        # ✅ URL E HEADERS CORRIGIDOS — PADRÃO Z-API
+        url = f"https://api.z-api.io/instances/{ZAPI_INSTANCE}/messages/text"
+        headers = {
+            "Client-Token": ZAPI_TOKEN,
+            "Content-Type": "application/json"
+        }
         payload = {
             "phone": telefone,
             "message": mensagem
         }
-        headers = {'Content-Type': 'application/json'}
 
         try:
             response = requests.post(url, json=payload, headers=headers, timeout=10)
