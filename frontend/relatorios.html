@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>📊 Relatórios - Kids Alerta</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="menu">
+            <a href="index.html" class="menu-item">📝 Cadastrar</a>
+            <a href="checkin.html" class="menu-item">✅ Check-in</a>
+            <a href="alerta-manual.html" class="menu-item">🔔 Alerta Manual</a>
+            <a href="relatorios.html" class="menu-item active">📊 Relatórios</a>
+        </div>
+
+        <div class="card">
+            <div class="header">
+                <h1>📊 Relatórios do Cultinho Kids</h1>
+                <p>Acompanhe os dados das crianças e alertas</p>
+            </div>
+
+            <div id="relatorio">
+                <button id="btnCarregarRelatorio" class="btn-relatorio">🔄 Carregar Relatório</button>
+                <div id="conteudoRelatorio" style="margin-top: 20px;"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('btnCarregarRelatorio').addEventListener('click', async function() {
+            const btn = this;
+            const conteudo = document.getElementById('conteudoRelatorio');
+            btn.disabled = true;
+            btn.textContent = 'Carregando...';
+            conteudo.innerHTML = '<p>Buscando dados...</p>';
+
+            try {
+                // Simulação de dados (você pode criar endpoints reais depois)
+                const criancasResponse = await fetch('/listar-criancas');
+                const criancasData = await criancasResponse.json();
+
+                if (!criancasData.success) throw new Error('Erro ao carregar crianças');
+
+                let html = `
+                    <h3>📋 Total de Crianças Cadastradas: ${criancasData.criancas.length}</h3>
+                    <table style="width:100%; border-collapse: collapse; margin-top: 20px;">
+                        <thead>
+                            <tr style="background: #f8f9fa; text-align: left;">
+                                <th style="padding: 12px; border: 1px solid #ddd;">Nome</th>
+                                <th style="padding: 12px; border: 1px solid #ddd;">Turma</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                `;
+
+                criancasData.criancas.forEach(crianca => {
+                    html += `
+                        <tr>
+                            <td style="padding: 12px; border: 1px solid #ddd;">${crianca.nome}</td>
+                            <td style="padding: 12px; border: 1px solid #ddd;">${crianca.turma}</td>
+                        </tr>
+                    `;
+                });
+
+                html += `
+                        </tbody>
+                    </table>
+                    <p style="margin-top: 20px; font-style: italic;">✨ Relatório gerado em ${new Date().toLocaleString('pt-BR')}</p>
+                `;
+
+                conteudo.innerHTML = html;
+
+            } catch (error) {
+                conteudo.innerHTML = `<p class="mensagem erro">❌ Erro ao carregar relatório: ${error.message}</p>`;
+            } finally {
+                btn.disabled = false;
+                btn.textContent = '🔄 Carregar Relatório';
+            }
+        });
+    </script>
+
+    <style>
+        .btn-relatorio {
+            background: #9b59b6;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        .btn-relatorio:hover {
+            background: #8e44ad;
+        }
+    </style>
+</body>
+</html>
