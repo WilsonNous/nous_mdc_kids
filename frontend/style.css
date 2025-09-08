@@ -6,12 +6,13 @@
 }
 
 body {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: white; /* Fundo branco, como você pediu */
     min-height: 100vh;
     padding: 20px;
     display: flex;
     align-items: center;
     justify-content: center;
+    color: #003366; /* Texto principal em azul escuro */
 }
 
 .container {
@@ -23,57 +24,78 @@ body {
     background: white;
     padding: 30px;
     border-radius: 15px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    border: 2px solid #007BFF; /* Borda azul */
 }
 
 .header h1 {
-    color: #2c3e50;
+    color: #007BFF;
     margin-bottom: 10px;
     font-size: 1.8rem;
+    text-align: center;
+    font-weight: bold;
 }
 
 .header p {
-    color: #7f8c8d;
+    color: #666;
     margin-bottom: 30px;
     font-size: 1rem;
+    text-align: center;
+}
+
+/* Logo no topo */
+.logo-container {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.logo-container img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
 }
 
 input, select, textarea, button {
     width: 100%;
     padding: 12px;
     margin: 8px 0;
-    border: 2px solid #ecf0f1;
+    border: 2px solid #007BFF;
     border-radius: 8px;
     font-size: 1rem;
+    transition: all 0.3s ease;
 }
 
 input:focus, select:focus, textarea:focus {
     outline: none;
-    border-color: #3498db;
+    border-color: #E6007A; /* Rosa vivo ao focar */
+    box-shadow: 0 0 0 3px rgba(230, 0, 122, 0.1);
 }
 
 button {
-    background: #27ae60;
+    background: #E6007A; /* Rosa vivo */
     color: white;
     font-weight: bold;
     cursor: pointer;
-    transition: background 0.3s;
+    transition: background 0.3s, transform 0.2s;
     margin-top: 20px;
+    border: none;
 }
 
 button:hover {
-    background: #2ecc71;
+    background: #C6006A;
+    transform: translateY(-2px);
 }
 
 .btn-alerta {
-    background: #e74c3c !important;
+    background: #E6007A !important;
     width: 100%;
     padding: 15px;
     font-size: 1.1rem;
 }
 
 .btn-alerta:hover {
-    background: #c0392b !important;
+    background: #C6006A !important;
 }
 
 .mensagem {
@@ -98,26 +120,34 @@ button:hover {
 
 h3 {
     margin: 25px 0 10px 0;
-    color: #2c3e50;
+    color: #007BFF;
     font-size: 1.2rem;
+    border-bottom: 2px solid #E6007A;
+    padding-bottom: 5px;
 }
 
 #listaCriancas p {
     text-align: center;
-    color: #7f8c8d;
+    color: #666;
     font-style: italic;
 }
 
 #listaCriancas button {
-    background: #3498db;
+    background: #007BFF;
     margin: 5px 0;
+    padding: 10px;
+    border: none;
+    border-radius: 8px;
+    color: white;
+    font-size: 1rem;
+    cursor: pointer;
 }
 
 #listaCriancas button:hover {
-    background: #2980b9;
+    background: #0056b3;
 }
 
-/* ✅ MENU DE NAVEGAÇÃO */
+/* Menu de navegação */
 .menu {
     display: flex;
     justify-content: center;
@@ -128,7 +158,7 @@ h3 {
 
 .menu-item {
     padding: 12px 20px;
-    background: #3498db;
+    background: #007BFF;
     color: white;
     text-decoration: none;
     border-radius: 8px;
@@ -139,14 +169,14 @@ h3 {
 }
 
 .menu-item:hover {
-    background: #2980b9;
+    background: #0056b3;
     transform: translateY(-2px);
 }
 
 .menu-item.active {
-    background: #2c3e50;
+    background: #E6007A;
 }
 
 .menu-item.active:hover {
-    background: #1a252f;
+    background: #C6006A;
 }
