@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔔 Alerta Manual - Kids Alerta</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="menu">
+            <a href="index.html" class="menu-item">📝 Cadastrar</a>
+            <a href="checkin.html" class="menu-item">✅ Check-in</a>
+            <a href="alerta-manual.html" class="menu-item active">🔔 Alerta Manual</a>
+            <a href="relatorios.html" class="menu-item">📊 Relatórios</a>
+        </div>
+
+        <div class="card">
+            <div class="header">
+                <h1>🔔 Enviar Alerta Manual</h1>
+                <p>Selecione uma criança e envie um alerta aos pais imediatamente</p>
+            </div>
+
+            <div id="listaCriancas">
+                <p>Carregando lista de crianças...</p>
+            </div>
+
+            <div id="areaAlerta" style="display:none; margin-top: 30px;">
+                <h3>🚨 Motivo do alerta:</h3>
+                <select id="motivoAlerta">
+                    <option value="Está chorando muito">Está chorando muito</option>
+                    <option value="Pediu pela mãe/pai">Pediu pela mãe/pai</option>
+                    <option value="Não quer participar">Não quer participar</option>
+                    <option value="Está com medo">Está com medo</option>
+                    <option value="Precisa trocar fralda">Precisa trocar fralda</option>
+                    <option value="Outro">Outro</option>
+                </select>
+                <button id="btnAlertaManual" class="btn-alerta">📤 ENVIAR ALERTA AGORA</button>
+            </div>
+
+            <div id="mensagemAlerta" class="mensagem"></div>
+        </div>
+    </div>
+
+    <script>
+        let criancaSelecionada = null;
+
+        document.addEventListener('DOMContentLoaded', carregarCriancas);
+
+        async function carregarCriancas() {
+            const listaDiv = document.getElementById('listaCriancas');
+            listaDiv.innerHTML = '<p>Carregando...</p>';
+
+            try {
+                const response = await fetch('/listar-criancas');
+                const data = await response.json();
+
+                if (!data.success) throw new Error(data.error);
+
+                if (data.criancas.length === 0) {
+                    listaDiv.innerHTML = '<p>❌ Nenhuma criança cadastrada ainda.</p>';
+                    return;
+                }
+
+                listaDiv.innerHTML = '<h3>Selecione uma criança para enviar alerta:</h3>';
+                data.criancas.forEach(crianca => {
+                    const btn = document.createElement('button');
+                    btn.textContent = `🔔 ${crianca.nome} (${crianca.turma})`;
+                    btn.style.width = '100%';
+                    btn.style.margin = '8px 0';
+                    btn.style.padding = '12px';
+                    btn.style.background = '#e74c3c';
+                    btn.style.color = 'white';
+                    btn.style.border = 'none';
+                    btn.style.borderRadius = '8px';
+                    btn.style.cursor = 'pointer';
+                    btn.onclick = () => selecionarCrianca(crianca);
+                    listaDiv.appendChild(btn);
+                });
+
+            } catch (error) {
+                listaDiv.innerHTML = `<p>❌ Erro ao carregar: ${error.message}</p>`;
+            }
+        }
+
+        function selecionarCrianca(crianca) {
+            criancaSelecionada = crianca;
+            document.getElementById('areaAlerta').style.display = 'block';
+        }
+
+        document.getElementById('btnAlertaManual').addEventListener('click', async function() {
+            if (!criancaSelecionada) {
+                alert('Selecione uma criança primeiro!');
+                return;
+            }
+
+            const motivo = document.getElementById('motivoAlerta').value;
+            const confirmar = confirm(`Enviar alerta para os pais de ${criancaSelecionada.nome}?`);
+
+            if (!confirmar) return;
+
+            const btn = this;
+            btn.disabled = true;
+            btn.textContent = 'Enviando...';
+
+            try {
+                const response = await fetch('/checkin', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        crianca_id: criancaSelecionada.id,
+                        status: 'alerta_enviado',
+                        observacao: motivo
+                    })
+                });
+
+                const data = await response.json();
+
+                const msgDiv = document.getElementById('mensagemAlerta');
+                if (data.success) {
+                    msgDiv.className = 'mensagem sucesso';
+                    msgDiv.textContent = '✅ Alerta enviado com sucesso!';
+                } else {
+                    throw new Error(data.error || 'Erro ao enviar alerta');
+                }
+
+            } catch (error) {
+                document.getElementById('mensagemAlerta').className = 'mensagem erro';
+                document.getElementById('mensagemAlerta').textContent = '❌ Erro: ' + error.message;
+            } finally {
+                btn.disabled = false;
+                btn.textContent = '📤 ENVIAR ALERTA AGORA';
+            }
+        });
+    </script>
+</body>
+</html>
