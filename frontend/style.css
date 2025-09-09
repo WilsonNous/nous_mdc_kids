@@ -681,3 +681,34 @@ h3 {
 .btn-checkin.oculto {
     display: none;
 }
+/* ✅ Barra de progresso */
+.progress-bar {
+    height: 6px;
+    background: #e9ecef;
+    border-radius: 3px;
+    overflow: hidden;
+    margin-top: 10px;
+    display: none;
+}
+
+.progress {
+    height: 100%;
+    background: #007BFF;
+    width: 0%;
+    transition: width 0.3s ease;
+}
+
+/* ✅ Status */
+.status {
+    text-align: center;
+    margin-top: 10px;
+    font-style: italic;
+    color: #6c757d;
+    display: none;
+}
+
+/* ✅ Ativo via JS */
+.progress-bar.ativo,
+.status.ativo {
+    display: block;
+}
