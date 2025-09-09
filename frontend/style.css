@@ -658,3 +658,26 @@ h3 {
         font-size: 1.3rem;
     }
 }
+
+/* ✅ Estilo para campo de busca */
+.busca-input {
+    width: 100%;
+    padding: 12px 16px;
+    border: 2px solid #007BFF;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    background: #f8f9fa;
+}
+
+.busca-input:focus {
+    outline: none;
+    border-color: #E6007A;
+    background: white;
+    box-shadow: 0 0 0 3px rgba(230, 0, 122, 0.15);
+}
+
+/* ✅ Botão de check-in oculto quando não corresponde à busca (opcional) */
+.btn-checkin.oculto {
+    display: none;
+}
