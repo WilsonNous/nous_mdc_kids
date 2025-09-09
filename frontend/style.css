@@ -45,9 +45,12 @@ body {
     white-space: nowrap;
 }
 
+/* ✅ AJUSTE: Subtítulo mais visível */
 .header-logo small {
-    font-size: 0.7rem;
-    opacity: 0.8;
+    font-size: 0.9rem;       /* Aumentado de 0.7rem */
+    opacity: 0.9;            /* Mais visível */
+    font-weight: 500;        /* Leve destaque */
+    letter-spacing: 0.5px;   /* Melhora leitura */
     display: none;
 }
 
@@ -465,8 +468,11 @@ h3 {
         font-size: 1.3rem;
     }
 
+    /* ✅ AJUSTE: Subtítulo aparece ao lado, com espaçamento e alinhamento */
     .header-logo small {
         display: inline;
+        margin-left: 8px;
+        line-height: 1.4;
     }
 
     .logo {
@@ -539,10 +545,12 @@ h3 {
         line-height: 1.3;
     }
 
+    /* ✅ AJUSTE: Subtítulo maior no mobile */
     .header-logo small {
         display: block;
-        font-size: 0.65rem;
-        margin-top: 2px;
+        font-size: 0.8rem;   /* Aumentado de 0.65rem */
+        margin-top: 4px;
+        line-height: 1.3;
     }
 
     .logo {
@@ -622,6 +630,12 @@ h3 {
         height: 32px;
         min-width: 32px;
         font-size: 0.7rem;
+    }
+
+    /* ✅ AJUSTE: Subtítulo um pouco menor, mas ainda legível */
+    .header-logo small {
+        font-size: 0.75rem;
+        margin-top: 3px;
     }
 
     #formCadastro h3 {
