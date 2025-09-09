@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ministério Infantil Mais de Cristo | Kids Alerta</title>
     <link rel="stylesheet" href="style.css">
+    <!-- ✅ Lib QR Code carregada aqui — ANTES do script.js -->
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
 </head>
 <body>
     <!-- ✅ CABEÇALHO FIXO NO TOPO — AJUSTADO PARA MOBILE -->
@@ -52,7 +54,7 @@
                 <input type="tel" id="whatsappResp2" placeholder="WhatsApp (somente números)">
 
                 <button type="submit" id="btnSubmit">✅ Cadastrar Criança</button>
-                <!-- ✅ Adicione ESTE bloco -->
+                <!-- ✅ Barra de progresso e status -->
                 <div class="progress-bar" id="progressBar">
                     <div class="progress" id="progress"></div>
                 </div>
