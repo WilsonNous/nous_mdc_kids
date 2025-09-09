@@ -181,15 +181,20 @@ const validacao = {
         }
         
         const telefone1 = document.getElementById('whatsappResp1').value;
-        if (!utils.validarTelefone(telefone1)) {
-            throw new Error('O número de WhatsApp do Responsável 1 não é válido');
+        // Remove máscara pra validar
+        const telefone1Limpo = telefone1.replace(/\D/g, '');
+        if (telefone1Limpo.length < 10 || telefone1Limpo.length > 13) {
+            throw new Error('O número de WhatsApp do Responsável 1 deve ter entre 10 e 13 dígitos');
         }
         
         const telefone2 = document.getElementById('whatsappResp2').value;
         const nomeResp2 = document.getElementById('nomeResp2').value;
         
-        if (telefone2 && !utils.validarTelefone(telefone2)) {
-            throw new Error('O número de WhatsApp do Responsável 2 não é válido');
+        if (telefone2) {
+            const telefone2Limpo = telefone2.replace(/\D/g, '');
+            if (telefone2Limpo.length < 10 || telefone2Limpo.length > 13) {
+                throw new Error('O número de WhatsApp do Responsável 2 deve ter entre 10 e 13 dígitos');
+            }
         }
         
         if ((telefone2 && !nomeResp2) || (nomeResp2 && !telefone2)) {
@@ -212,13 +217,13 @@ const validacao = {
         
         const resp1 = {
             nome: document.getElementById('nomeResp1').value.trim(),
-            telefone_whatsapp: document.getElementById('whatsappResp1').value.trim()
+            telefone_whatsapp: document.getElementById('whatsappResp1').value.replace(/\D/g, '').trim()
         };
         responsaveis.push(resp1);
         
         const resp2 = {
             nome: document.getElementById('nomeResp2').value.trim(),
-            telefone_whatsapp: document.getElementById('whatsappResp2').value.trim()
+            telefone_whatsapp: document.getElementById('whatsappResp2').value.replace(/\D/g, '').trim()
         };
         
         if (resp2.nome && resp2.telefone_whatsapp) {
