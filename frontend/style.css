@@ -374,6 +374,85 @@
             }
         }
 
+        /* 📱 MOBILE (telas menores que 768px) — AJUSTES ESPECÍFICOS PRO CABEÇALHO */
+        @media (max-width: 767px) {
+            .header-unificado {
+                padding: 10px 12px;
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 12px;
+            }
+        
+            .header-logo {
+                width: 100%;
+                justify-content: space-between;
+                flex-wrap: wrap;
+            }
+        
+            .header-logo h2 {
+                font-size: 1rem;
+                text-align: left;
+                line-height: 1.3;
+            }
+        
+            .header-logo small {
+                display: block;
+                font-size: 0.65rem;
+                margin-top: 2px;
+            }
+        
+            .logo {
+                height: 36px;
+                min-width: 36px;
+                font-size: 0.8rem;
+            }
+        
+            .menu-horizontal {
+                width: 100%;
+                justify-content: flex-start;
+                overflow-x: auto;
+                padding: 8px 0;
+                gap: 8px;
+            }
+        
+            .menu-horizontal .menu-item {
+                white-space: nowrap;
+                font-size: 0.85rem;
+                padding: 6px 10px;
+            }
+        
+            /* ✅ Opcional: Scroll suave no menu horizontal */
+            .menu-horizontal::-webkit-scrollbar {
+                height: 4px;
+            }
+            .menu-horizontal::-webkit-scrollbar-thumb {
+                background: #2b3e57;
+                border-radius: 4px;
+            }
+        }
+        
+        /* 📱 SUPER MOBILE (telas menores que 480px) */
+        @media (max-width: 480px) {
+            .header-unificado {
+                padding: 8px 10px;
+            }
+        
+            .header-logo h2 {
+                font-size: 0.95rem;
+            }
+        
+            .menu-horizontal .menu-item {
+                font-size: 0.8rem;
+                padding: 5px 8px;
+            }
+        
+            .logo {
+                height: 32px;
+                min-width: 32px;
+                font-size: 0.7rem;
+            }
+        }
+
         /* Estilos específicos para a visualização */
         .device-preview {
             display: flex;
