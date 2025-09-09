@@ -7,17 +7,18 @@ document.addEventListener('DOMContentLoaded', () => {
 function inicializarAplicacao() {
     carregarCriancas();
     document.getElementById('btnCadastrarNova').addEventListener('click', abrirCadastro);
-    document.getElementById('btnRecarregar').addEventListener('click', carregarCriancas);
+    
+    // ✅ Só adiciona o evento se o botão existir
+    const btnRecarregar = document.getElementById('btnRecarregar');
+    if (btnRecarregar) {
+        btnRecarregar.style.display = 'block'; // Mostra o botão
+        btnRecarregar.addEventListener('click', carregarCriancas);
+    }
 }
 
 async function carregarCriancas() {
     const listaDiv = document.getElementById('listaCriancas');
-    const loadingElement = listaDiv.querySelector('.loading') || document.createElement('p');
-    
-    loadingElement.className = 'loading';
-    loadingElement.textContent = 'Carregando...';
-    listaDiv.innerHTML = '';
-    listaDiv.appendChild(loadingElement);
+    listaDiv.innerHTML = '<p class="loading">Carregando...</p>';
 
     try {
         const response = await fetch('/listar-criancas');
@@ -42,7 +43,6 @@ async function carregarCriancas() {
         
         data.criancas.forEach(crianca => {
             const btn = document.createElement('button');
-            btn.textContent = `${crianca.nome} (${crianca.turma})`;
             btn.className = 'btn-checkin';
             btn.dataset.id = crianca.id;
             btn.innerHTML = `
@@ -61,7 +61,7 @@ async function carregarCriancas() {
         listaDiv.innerHTML = `
             <p class="error-message">❌ Erro ao carregar: ${error.message}</p>
             <button class="btn-recarregar" onclick="carregarCriancas()">
-                Tentar novamente
+                🔄 Tentar novamente
             </button>
         `;
     }
@@ -103,7 +103,7 @@ async function realizarCheckin(crianca) {
             msgDiv.innerHTML = `✅ Check-in realizado para <strong>${crianca.nome}</strong>!`;
             document.getElementById('areaAlerta').style.display = 'block';
             
-            // Adicionar animação de confirmação
+            // Animação de confirmação
             if (botaoClicado) {
                 botaoClicado.classList.remove('processing');
                 botaoClicado.classList.add('success');
@@ -113,7 +113,7 @@ async function realizarCheckin(crianca) {
                 }, 2000);
             }
             
-            // Opcional: recarregar a lista após um breve delay
+            // Recarrega a lista após 3 segundos
             setTimeout(carregarCriancas, 3000);
         } else {
             throw new Error(data.error);
@@ -136,8 +136,7 @@ function abrirCadastro() {
     }
 }
 
-// Mover os estilos para um arquivo CSS separado é recomendado
-// Estes estilos são apenas para funcionalidade básica
+// Estilos (recomendado migrar pro style.css depois)
 const style = document.createElement('style');
 style.textContent = `
     .loading, .empty-state, .error-message {
@@ -158,7 +157,7 @@ style.textContent = `
     
     .btn-checkin {
         display: flex;
-        justify-content: space-between;
+        justify-content: flex-start;
         align-items: center;
         width: 100%;
         margin: 8px 0;
@@ -170,6 +169,7 @@ style.textContent = `
         cursor: pointer;
         font-weight: bold;
         transition: all 0.3s ease;
+        gap: 10px;
     }
     
     .btn-checkin:hover {
@@ -190,19 +190,21 @@ style.textContent = `
     
     .btn-checkin .icon {
         font-size: 1.2em;
+        min-width: 24px;
+        text-align: center;
     }
     
     .btn-checkin .nome {
         flex-grow: 1;
         text-align: left;
-        margin-left: 10px;
     }
     
     .btn-checkin .turma {
         background: rgba(255, 255, 255, 0.2);
         padding: 3px 8px;
         border-radius: 12px;
-        font-size: 0.9em;
+        font-size: 0.85em;
+        white-space: nowrap;
     }
     
     .btn-cadastrar, .btn-recarregar {
