@@ -5,7 +5,12 @@ const CONFIG = {
         responsavel: '/cadastrar-responsavel'
     },
     timeout: 30000, // 30 segundos
-    debugMode: true // Alterne para false em produção
+    debugMode: true, // Alterne para false em produção
+    zapi: {
+        instance: 'SUA_INSTANCIA', // ⚠️ Substitua!
+        token: 'SEU_TOKEN',        // ⚠️ Substitua!
+        url: 'https://api.z-api.io/instances/SUA_INSTANCIA/token/SEU_TOKEN/send-image'
+    }
 };
 
 // Elementos do DOM
@@ -51,24 +56,24 @@ const utils = {
     }
 };
 
-// Funções de UI (SEM CSS — só manipulação de classes e texto)
+// Funções de UI
 const ui = {
-    // Mostrar mensagem para o usuário (via classes CSS)
+    // Mostrar mensagem para o usuário
     mostrarMensagem: (texto, tipo) => {
         elementos.mensagem.textContent = texto;
         elementos.mensagem.className = 'mensagem ' + tipo;
     },
     
-    // Atualizar barra de progresso (só altera width via JS — necessário para animação)
+    // Atualizar barra de progresso
     atualizarProgresso: (etapa, total) => {
         if (total > 0) {
             const percentual = (etapa / total) * 100;
-            elementos.progress.style.width = percentual + '%'; // ÚNICA EXCEÇÃO JUSTIFICADA — animação dinâmica
+            elementos.progress.style.width = percentual + '%';
             elementos.status.textContent = `Processando: ${etapa} de ${total} concluído`;
         }
     },
     
-    // Mostrar/ocultar estado de carregamento (via classes e atributos)
+    // Mostrar/ocultar estado de carregamento
     toggleCarregamento: (estaCarregando) => {
         elementos.btnSubmit.disabled = estaCarregando;
         elementos.progressBar.classList.toggle('ativo', estaCarregando);
@@ -85,7 +90,7 @@ const ui = {
     // Limpar formulário
     limparFormulario: () => {
         elementos.form.reset();
-        elementos.progress.style.width = '0%'; // ÚNICA EXCEÇÃO — reset visual da barra
+        elementos.progress.style.width = '0%';
     }
 };
 
@@ -227,69 +232,3 @@ const validacao = {
         return { crianca, responsaveis };
     }
 };
-
-// Processamento principal do formulário
-const processarCadastro = async (e) => {
-    e.preventDefault();
-    
-    try {
-        validacao.validarFormulario();
-        
-        ui.toggleCarregamento(true);
-        elementos.mensagem.className = '';
-        
-        const { crianca, responsaveis } = validacao.coletarDadosFormulario();
-        
-        estado.etapaAtual = 0;
-        estado.totalEtapas = 1 + responsaveis.length;
-        ui.atualizarProgresso(estado.etapaAtual, estado.totalEtapas);
-        
-        const dataCrianca = await api.cadastrarCrianca(crianca);
-        
-        for (let i = 0; i < responsaveis.length; i++) {
-            const responsavel = {
-                ...responsaveis[i],
-                crianca_id: dataCrianca.crianca_id
-            };
-            
-            await api.cadastrarResponsavel(responsavel, i);
-        }
-        
-        ui.mostrarMensagem('✅ Cadastro realizado com sucesso!', 'sucesso');
-        ui.limparFormulario();
-        
-    } catch (error) {
-        console.error('Erro no cadastro:', error);
-        ui.mostrarMensagem(`❌ Erro: ${error.message}`, 'erro');
-        
-    } finally {
-        ui.toggleCarregamento(false);
-    }
-};
-
-// Inicialização
-document.addEventListener('DOMContentLoaded', () => {
-    elementos.form.addEventListener('submit', processarCadastro);
-    
-    // Adiciona máscara para telefone
-    const inputsTelefone = document.querySelectorAll('input[type="tel"]');
-    inputsTelefone.forEach(input => {
-        input.addEventListener('input', (e) => {
-            let value = e.target.value.replace(/\D/g, '');
-            if (value.length > 11) value = value.slice(0, 11);
-            
-            if (value.length > 0) {
-                value = value.replace(/^(\d{2})(\d)/g, '($1) $2');
-                if (value.length > 10) {
-                    value = value.replace(/(\d{5})(\d)/, '$1-$2');
-                } else {
-                    value = value.replace(/(\d{4})(\d)/, '$1-$2');
-                }
-            }
-            
-            e.target.value = value;
-        });
-    });
-    
-    console.log('Sistema de cadastro inicializado');
-});
