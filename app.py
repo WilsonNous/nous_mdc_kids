@@ -314,6 +314,55 @@ def webhook_zapi():
         print(f"🔥 ERRO no webhook: {str(e)}")
         return jsonify({"status": "error", "message": str(e)}), 500
 
+# ✅ ROTA: ENVIAR QR CODE VIA Z-API (CHAMADA PELO FRONTEND)
+@app.route('/enviar-qrcode', methods=['POST'])
+def enviar_qrcode():
+    try:
+        data = request.get_json()
+        numero = data.get('numero')
+        base64Image = data.get('base64Image')
+        nomeCrianca = data.get('nomeCrianca')
+        codigo = data.get('codigo')
+
+        # Validação básica
+        if not all([numero, base64Image, nomeCrianca, codigo]):
+            return jsonify({"error": "Dados incompletos"}), 400
+
+        # ✅ Garante que o número começa com 55
+        if not numero.startswith('55'):
+            numero = '55' + numero.replace('+', '').replace(' ', '')
+
+        # ✅ Mensagem personalizada
+        mensagem = f"Olá! Aqui está o QR Code para check-in rápido do(a) {nomeCrianca} 🎉\nCódigo: *{codigo}*\nBasta escanear na entrada do culto!"
+
+        # ✅ URL da Z-API para envio de imagem
+        url = f"https://api.z-api.io/instances/{ZAPI_INSTANCE}/token/{ZAPI_TOKEN}/send-image"
+
+        headers = {
+            "Content-Type": "application/json"
+        }
+
+        payload = {
+            "phone": f"{numero}@s.whatsapp.net",
+            "caption": mensagem,
+            "image": base64Image
+        }
+
+        # ✅ Envia requisição
+        response = requests.post(url, json=payload, headers=headers, timeout=10)
+
+        if response.status_code in [200, 201]:
+            print(f"✅ QR Code enviado para {numero}")
+            return jsonify({"status": "success", "message": "QR Code enviado com sucesso!"}), 200
+        else:
+            error_msg = response.text
+            print(f"❌ Erro ao enviar QR Code: {error_msg}")
+            return jsonify({"error": f"Erro na API: {error_msg}"}), 500
+
+    except Exception as e:
+        print(f"🔥 Erro interno ao enviar QR Code: {str(e)}")
+        return jsonify({"error": f"Erro interno: {str(e)}"}), 500
+
 # ✅ FUNÇÃO AUXILIAR: RESPONDER MENSAGEM VIA Z-API
 def responder_whatsapp(telefone, mensagem):
     """Envia uma mensagem de resposta via Z-API"""
