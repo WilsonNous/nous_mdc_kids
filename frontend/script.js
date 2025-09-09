@@ -1,16 +1,12 @@
-// Configurações
+// Configurações (sem credenciais sensíveis!)
 const CONFIG = {
     endpoints: {
         crianca: '/cadastrar-crianca',
-        responsavel: '/cadastrar-responsavel'
+        responsavel: '/cadastrar-responsavel',
+        enviarQRCode: '/enviar-qrcode' // ✅ Novo endpoint seguro
     },
     timeout: 30000, // 30 segundos
-    debugMode: true, // Alterne para false em produção
-    zapi: {
-        instance: 'SUA_INSTANCIA', // ⚠️ Substitua!
-        token: 'SEU_TOKEN',        // ⚠️ Substitua!
-        url: 'https://api.z-api.io/instances/SUA_INSTANCIA/token/SEU_TOKEN/send-image'
-    }
+    debugMode: true // Alterne para false em produção
 };
 
 // Elementos do DOM
@@ -233,33 +229,26 @@ const validacao = {
     }
 };
 
-// 🆕 Função para enviar QR Code via Z-API
+// ✅ Função ATUALIZADA: envia QR Code via backend (sem token no frontend!)
 async function enviarQRParaWhatsApp(numero, base64Image, nomeCrianca, codigo) {
-    const mensagem = `Olá! Aqui está o QR Code para check-in rápido do(a) ${nomeCrianca} 🎉\nCódigo: *${codigo}*\nBasta escanear na entrada do culto!`;
-
     try {
-        const urlZAPI = CONFIG.zapi.url
-            .replace('SUA_INSTANCIA', CONFIG.zapi.instance)
-            .replace('SEU_TOKEN', CONFIG.zapi.token);
-
-        const response = await fetch(urlZAPI, {
+        const response = await fetch(CONFIG.endpoints.enviarQRCode, {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-                phone: `${numero}@s.whatsapp.net`,
-                caption: mensagem,
-                image: base64Image
+                numero,
+                base64Image,
+                nomeCrianca,
+                codigo
             })
         });
 
         const data = await response.json();
 
-        if (data.status === 'success') {
+        if (response.ok) {
             ui.mostrarMensagem('✅ QR Code enviado com sucesso para o WhatsApp!', 'sucesso');
         } else {
-            throw new Error(data.message || 'Erro ao enviar');
+            throw new Error(data.error || 'Erro ao enviar');
         }
     } catch (error) {
         console.error('Erro ao enviar QR Code:', error);
@@ -346,7 +335,7 @@ const processarCadastro = async (e) => {
                     const canvas = document.getElementById('qrcode-container').querySelector('canvas');
                     const qrBase64 = canvas.toDataURL("image/png");
                     
-                    // Envia via Z-API
+                    // Envia via backend (seguro!)
                     enviarQRParaWhatsApp(numeroWhatsApp, qrBase64, crianca.nome, codigoCheckin);
                 });
             });
