@@ -97,7 +97,7 @@ body {
 .container-wide {
     width: 100%;
     padding: 16px;
-    margin-top: 90px;
+    margin-top: 130px;
 }
 
 .container {
@@ -126,6 +126,7 @@ body {
     box-shadow: 0 6px 20px rgba(0,0,0,0.08);
     border: 2px solid #007BFF;
     margin-bottom: 20px;
+    min-height: calc(100vh - 150px);
 }
 
 /* ✅ Títulos e textos */
