@@ -232,3 +232,164 @@ const validacao = {
         return { crianca, responsaveis };
     }
 };
+
+// 🆕 Função para enviar QR Code via Z-API
+async function enviarQRParaWhatsApp(numero, base64Image, nomeCrianca, codigo) {
+    const mensagem = `Olá! Aqui está o QR Code para check-in rápido do(a) ${nomeCrianca} 🎉\nCódigo: *${codigo}*\nBasta escanear na entrada do culto!`;
+
+    try {
+        const urlZAPI = CONFIG.zapi.url
+            .replace('SUA_INSTANCIA', CONFIG.zapi.instance)
+            .replace('SEU_TOKEN', CONFIG.zapi.token);
+
+        const response = await fetch(urlZAPI, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                phone: `${numero}@s.whatsapp.net`,
+                caption: mensagem,
+                image: base64Image
+            })
+        });
+
+        const data = await response.json();
+
+        if (data.status === 'success') {
+            ui.mostrarMensagem('✅ QR Code enviado com sucesso para o WhatsApp!', 'sucesso');
+        } else {
+            throw new Error(data.message || 'Erro ao enviar');
+        }
+    } catch (error) {
+        console.error('Erro ao enviar QR Code:', error);
+        ui.mostrarMensagem(`❌ Falha ao enviar: ${error.message}`, 'erro');
+    }
+}
+
+// Processamento principal do formulário
+const processarCadastro = async (e) => {
+    e.preventDefault();
+    
+    try {
+        // Valida o formulário
+        validacao.validarFormulario();
+        
+        // Prepara interface para processamento
+        ui.toggleCarregamento(true);
+        elementos.mensagem.className = '';
+        
+        // Coleta dados do formulário
+        const { crianca, responsaveis } = validacao.coletarDadosFormulario();
+        
+        // Configura progresso (1 etapa para criança + 1 para cada responsável)
+        estado.etapaAtual = 0;
+        estado.totalEtapas = 1 + responsaveis.length;
+        ui.atualizarProgresso(estado.etapaAtual, estado.totalEtapas);
+        
+        // 1. Cadastra a criança
+        const dataCrianca = await api.cadastrarCrianca(crianca);
+        
+        // 2. Cadastra os responsáveis
+        for (let i = 0; i < responsaveis.length; i++) {
+            const responsavel = {
+                ...responsaveis[i],
+                crianca_id: dataCrianca.crianca_id
+            };
+            
+            await api.cadastrarResponsavel(responsavel, i);
+        }
+        
+        // ✅ SUCESSO — GERA QR CODE + OPÇÕES
+        ui.mostrarMensagem('✅ Cadastro realizado com sucesso!', 'sucesso');
+        
+        // Gera código e URL
+        const codigoCheckin = `CHK-${dataCrianca.crianca_id.toString().padStart(6, '0')}`;
+        const urlCheckin = `${window.location.origin}/checkin-auto.html?id=${dataCrianca.crianca_id}`;
+        
+        // Cria container visual
+        const codigoDiv = document.createElement('div');
+        codigoDiv.innerHTML = `
+            <div class="card" style="margin-top: 20px; text-align: center;">
+                <h3>📲 QR Code para Check-in Rápido</h3>
+                <p>Escaneie ou envie para o WhatsApp dos responsáveis.</p>
+                <div id="qrcode-container" style="margin: 20px auto; width: 160px; height: 160px;"></div>
+                <p><strong>Código: ${codigoCheckin}</strong></p>
+                <p><small>Acesse: ${urlCheckin}</small></p>
+                <button id="btnEnviarWhatsApp" class="btn-alerta" style="margin-top: 15px; width: 100%;">
+                    📲 Enviar QR Code por WhatsApp
+                </button>
+                <button onclick="window.print()" style="margin-top: 10px; padding: 10px 20px; background: #007BFF; color: white; border: none; border-radius: 6px; cursor: pointer; width: 100%;">
+                    🖨️ Imprimir Cartão
+                </button>
+            </div>
+        `;
+        elementos.mensagem.parentNode.appendChild(codigoDiv);
+        
+        // Carrega lib QR Code
+        const scriptQR = document.createElement('script');
+        scriptQR.src = "https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js";
+        scriptQR.onload = () => {
+            QRCode.toCanvas(document.getElementById('qrcode-container'), urlCheckin, { width: 160 }, function (error) {
+                if (error) console.error(error);
+                
+                // Adiciona evento ao botão de envio por WhatsApp
+                document.getElementById('btnEnviarWhatsApp').addEventListener('click', () => {
+                    const numeroWhatsApp = document.getElementById('whatsappResp1').value.replace(/\D/g, '');
+                    
+                    if (!numeroWhatsApp || numeroWhatsApp.length < 10) {
+                        alert('Por favor, verifique o número de WhatsApp do responsável.');
+                        return;
+                    }
+                    
+                    // Gera imagem do QR Code em base64
+                    const canvas = document.getElementById('qrcode-container').querySelector('canvas');
+                    const qrBase64 = canvas.toDataURL("image/png");
+                    
+                    // Envia via Z-API
+                    enviarQRParaWhatsApp(numeroWhatsApp, qrBase64, crianca.nome, codigoCheckin);
+                });
+            });
+        };
+        document.head.appendChild(scriptQR);
+        
+        // Limpa formulário
+        ui.limparFormulario();
+        
+    } catch (error) {
+        // Tratamento de erro
+        console.error('Erro no cadastro:', error);
+        ui.mostrarMensagem(`❌ Erro: ${error.message}`, 'erro');
+        
+    } finally {
+        // Sempre executa, independente de sucesso ou erro
+        ui.toggleCarregamento(false);
+    }
+};
+
+// Inicialização
+document.addEventListener('DOMContentLoaded', () => {
+    elementos.form.addEventListener('submit', processarCadastro);
+    
+    // Adiciona máscara para telefone
+    const inputsTelefone = document.querySelectorAll('input[type="tel"]');
+    inputsTelefone.forEach(input => {
+        input.addEventListener('input', (e) => {
+            let value = e.target.value.replace(/\D/g, '');
+            if (value.length > 11) value = value.slice(0, 11);
+            
+            if (value.length > 0) {
+                value = value.replace(/^(\d{2})(\d)/g, '($1) $2');
+                if (value.length > 10) {
+                    value = value.replace(/(\d{5})(\d)/, '$1-$2');
+                } else {
+                    value = value.replace(/(\d{4})(\d)/, '$1-$2');
+                }
+            }
+            
+            e.target.value = value;
+        });
+    });
+    
+    console.log('Sistema de cadastro inicializado');
+});
