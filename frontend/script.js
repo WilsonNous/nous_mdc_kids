@@ -46,7 +46,7 @@ const utils = {
     
     // Exibir informações de debug
     exibirDebug: (info) => {
-        if (CONFIG.debugMode) {
+        if (CONFIG.debugMode && elementos.debugInfo) {
             elementos.debugInfo.textContent = info;
         }
     }
@@ -71,15 +71,25 @@ const ui = {
     
     // Mostrar/ocultar estado de carregamento
     toggleCarregamento: (estaCarregando) => {
-        elementos.btnSubmit.disabled = estaCarregando;
-        elementos.progressBar.classList.toggle('ativo', estaCarregando);
-        elementos.status.classList.toggle('ativo', estaCarregando);
+        if (elementos.btnSubmit) {
+            elementos.btnSubmit.disabled = estaCarregando;
+        }
+        if (elementos.progressBar) {
+            elementos.progressBar.classList.toggle('ativo', estaCarregando);
+        }
+        if (elementos.status) {
+            elementos.status.classList.toggle('ativo', estaCarregando);
+        }
         estado.processando = estaCarregando;
         
         if (estaCarregando) {
-            elementos.btnSubmit.textContent = 'Processando...';
+            if (elementos.btnSubmit) {
+                elementos.btnSubmit.textContent = 'Processando...';
+            }
         } else {
-            elementos.btnSubmit.textContent = 'Cadastrar';
+            if (elementos.btnSubmit) {
+                elementos.btnSubmit.textContent = 'Cadastrar';
+            }
         }
     },
     
@@ -181,7 +191,6 @@ const validacao = {
         }
         
         const telefone1 = document.getElementById('whatsappResp1').value;
-        // Remove máscara pra validar
         const telefone1Limpo = telefone1.replace(/\D/g, '');
         if (telefone1Limpo.length < 10 || telefone1Limpo.length > 13) {
             throw new Error('O número de WhatsApp do Responsável 1 deve ter entre 10 e 13 dígitos');
@@ -320,12 +329,15 @@ const processarCadastro = async (e) => {
         `;
         elementos.mensagem.parentNode.appendChild(codigoDiv);
         
-        // Carrega lib QR Code
-        const scriptQR = document.createElement('script');
-        scriptQR.src = "https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js";
-        scriptQR.onload = () => {
+        // ✅ Gera QR Code (lib já carregada no HTML)
+        if (typeof QRCode !== 'undefined') {
             QRCode.toCanvas(document.getElementById('qrcode-container'), urlCheckin, { width: 160 }, function (error) {
-                if (error) console.error(error);
+                if (error) {
+                    console.error("❌ Erro ao gerar QR Code:", error);
+                    document.getElementById('qrcode-container').innerHTML = '<p style="color: red;">Erro ao gerar QR Code.</p>';
+                    return;
+                }
+                console.log("✅ QR Code gerado com sucesso!");
                 
                 // Adiciona evento ao botão de envio por WhatsApp
                 document.getElementById('btnEnviarWhatsApp').addEventListener('click', () => {
@@ -336,16 +348,16 @@ const processarCadastro = async (e) => {
                         return;
                     }
                     
-                    // Gera imagem do QR Code em base64
                     const canvas = document.getElementById('qrcode-container').querySelector('canvas');
                     const qrBase64 = canvas.toDataURL("image/png");
                     
-                    // Envia via backend (seguro!)
                     enviarQRParaWhatsApp(numeroWhatsApp, qrBase64, crianca.nome, codigoCheckin);
                 });
             });
-        };
-        document.head.appendChild(scriptQR);
+        } else {
+            console.error("❌ Lib QR Code não carregada!");
+            document.getElementById('qrcode-container').innerHTML = '<p style="color: red;">Erro: Lib QR Code não carregada.</p>';
+        }
         
         // Limpa formulário
         ui.limparFormulario();
