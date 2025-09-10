@@ -82,21 +82,21 @@ def enviar_whatsapp_alerta(crianca_id, motivo="Está precisando de você"):
                    f"📍 Pode vir até a Sala Kids? Estamos com ela(e) com carinho!\n\n" \
                    f"❤️ Equipe Mais de Cristo Canasvieiras"
 
-        # ✅ URL SEM ESPAÇOS + FORMATO @c.us
-        url = f"https://api.z-api.io/instances/{ZAPI_INSTANCE}/messages/text"
+        # ✅ URL SEM ESPAÇOS + FORMATO @s.whatsapp.net
+        url = f"https://api.z-api.io/instances/{ZAPI_INSTANCE}/messages/text"  # ✅ REMOVIDOS OS ESPAÇOS!
         headers = {
             "Client-Token": ZAPI_TOKEN,
             "Content-Type": "application/json"
         }
         payload = {
-            "phone": f"{telefone}@c.us",  # ✅ FORMATO CORRETO!
+            "phone": f"{telefone}@s.whatsapp.net",  # ✅ MUDADO PARA @s.whatsapp.net
             "message": mensagem
         }
 
         try:
             response = requests.post(url, json=payload, headers=headers, timeout=10)
             if response.status_code in [200, 201]:
-                print(f"✅ Mensagem enviada para {resp['nome']} ({telefone}@c.us)")
+                print(f"✅ Mensagem enviada para {resp['nome']} ({telefone}@s.whatsapp.net)")
             else:
                 print(f"❌ Erro ao enviar para {telefone}: {response.text}")
         except Exception as e:
@@ -328,12 +328,12 @@ def enviar_qrcode():
         mensagem = f"Olá! Aqui está o QR Code para check-in rápido do(a) {nomeCrianca} 🎉\nCódigo: *{codigo}*\nBasta escanear na entrada do culto!"
 
         # ✅ URL SEM ESPAÇOS + FORMATO @s.whatsapp.net
-        url = f"https://api.z-api.io/instances/{ZAPI_INSTANCE}/token/{ZAPI_TOKEN}/send-image"
+        url = f"https://api.z-api.io/instances/{ZAPI_INSTANCE}/token/{ZAPI_TOKEN}/send-image"  # ✅ REMOVIDOS OS ESPAÇOS!
         headers = {
             "Content-Type": "application/json"
         }
         payload = {
-            "phone": f"{numero}@s.whatsapp.net",  # ✅ FORMATO CORRETO PARA IMAGEM!
+            "phone": f"{numero}@s.whatsapp.net",
             "caption": mensagem,
             "image": base64Image
         }
@@ -359,20 +359,20 @@ def responder_whatsapp(telefone, mensagem):
         return False
 
     # ✅ URL SEM ESPAÇOS
-    url = f"https://api.z-api.io/instances/{ZAPI_INSTANCE}/messages/text"
+    url = f"https://api.z-api.io/instances/{ZAPI_INSTANCE}/messages/text"  # ✅ REMOVIDOS OS ESPAÇOS!
     headers = {
         "Client-Token": ZAPI_TOKEN,
         "Content-Type": "application/json"
     }
     payload = {
-        "phone": f"{telefone}@c.us",  # ✅ FORMATO CORRETO!
+        "phone": f"{telefone}@s.whatsapp.net",  # ✅ MUDADO PARA @s.whatsapp.net
         "message": mensagem
     }
 
     try:
         response = requests.post(url, json=payload, headers=headers, timeout=10)
         if response.status_code in [200, 201]:
-            print(f"✅ Resposta enviada para {telefone}@c.us")
+            print(f"✅ Resposta enviada para {telefone}@s.whatsapp.net")
             return True
         else:
             print(f"❌ Erro ao responder: {response.text}")
