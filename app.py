@@ -1,5 +1,6 @@
 import requests
 import os
+import re  # ✅ Adicionado para limpar telefone
 from dotenv import load_dotenv
 from flask import Flask, request, jsonify, send_from_directory
 from database import get_db_connection, close_db_connection
@@ -8,14 +9,14 @@ from datetime import datetime
 # ✅ 1. Carrega variáveis de ambiente
 load_dotenv()
 
-# ✅ 2. CRIA A INSTÂNCIA DO FLASK — ISSO DEVE VIR ANTES DE QUALQUER @app.route!
+# ✅ 2. CRIA A INSTÂNCIA DO FLASK
 app = Flask(__name__)
 
 # ✅ 3. Configurações da Z-API
 ZAPI_TOKEN = os.getenv("ZAPI_TOKEN")
 ZAPI_INSTANCE = os.getenv("ZAPI_INSTANCE")
 
-# ✅ 4. ROTA RAIZ — AGORA SIM, app JÁ EXISTE!
+# ✅ 4. ROTA RAIZ
 @app.route('/')
 def home():
     return send_from_directory('frontend', 'index.html')
@@ -25,12 +26,12 @@ def home():
 def checkin_page():
     return send_from_directory('frontend', 'checkin.html')
 
-# ✅ 6. ROTA PARA ARQUIVOS ESTÁTICOS (CSS, JS)
+# ✅ 6. ROTA PARA ARQUIVOS ESTÁTICOS
 @app.route('/<path:filename>')
 def static_files(filename):
     return send_from_directory('frontend', filename)
 
-# ✅ 7. FUNÇÃO DE ENVIO DE WHATSAPP
+# ✅ 7. FUNÇÃO DE ENVIO DE WHATSAPP — AJUSTADA
 def enviar_whatsapp_alerta(crianca_id, motivo="Está precisando de você"):
     conn = get_db_connection()
     if not conn:
@@ -58,15 +59,22 @@ def enviar_whatsapp_alerta(crianca_id, motivo="Está precisando de você"):
         print("❌ Nenhum responsável encontrado")
         return False
 
-    # ✅ DEBUG: Verifica se tokens estão carregados
     print(f"🔐 ZAPI_INSTANCE: {ZAPI_INSTANCE}")
     print(f"🔐 ZAPI_TOKEN: {ZAPI_TOKEN[:5]}...")
 
     for resp in responsaveis:
-        # Formata telefone: garante que começa com 55
-        telefone = resp['telefone_whatsapp']
-        if not telefone.startswith('55'):
+        # ✅ LIMPA e VALIDA telefone
+        telefone = re.sub(r'\D', '', str(resp['telefone_whatsapp']))
+        
+        if len(telefone) == 11 and telefone.startswith('4'):
             telefone = '55' + telefone
+        elif len(telefone) == 10 and telefone.startswith('4'):
+            telefone = '55' + telefone
+        elif len(telefone) == 13 and telefone.startswith('55'):
+            pass
+        else:
+            print(f"❌ Telefone inválido para {resp['nome']}: {telefone}")
+            continue
 
         mensagem = f"🔔 *Igreja Mais de Cristo - Cultinho Kids*\n\n" \
                    f"Oi, {resp['nome']}! Sua(o) filha(o) *{crianca['nome']}* está precisando de você aqui no cultinho.\n" \
@@ -74,21 +82,21 @@ def enviar_whatsapp_alerta(crianca_id, motivo="Está precisando de você"):
                    f"📍 Pode vir até a Sala Kids? Estamos com ela(e) com carinho!\n\n" \
                    f"❤️ Equipe Mais de Cristo Canasvieiras"
 
-        # ✅ URL E HEADERS CORRIGIDOS — PADRÃO Z-API
+        # ✅ URL SEM ESPAÇOS + FORMATO @c.us
         url = f"https://api.z-api.io/instances/{ZAPI_INSTANCE}/messages/text"
         headers = {
             "Client-Token": ZAPI_TOKEN,
             "Content-Type": "application/json"
         }
         payload = {
-            "phone": telefone,
+            "phone": f"{telefone}@c.us",  # ✅ FORMATO CORRETO!
             "message": mensagem
         }
 
         try:
             response = requests.post(url, json=payload, headers=headers, timeout=10)
             if response.status_code in [200, 201]:
-                print(f"✅ Mensagem enviada para {resp['nome']} ({telefone})")
+                print(f"✅ Mensagem enviada para {resp['nome']} ({telefone}@c.us)")
             else:
                 print(f"❌ Erro ao enviar para {telefone}: {response.text}")
         except Exception as e:
@@ -131,7 +139,7 @@ def registrar_checkin():
 def cadastrar_crianca():
     try:
         data = request.json
-        print("📥 Dados recebidos:", data)  # Log para debug
+        print("📥 Dados recebidos:", data)
 
         if not data:
             return jsonify({"error": "Nenhum dado recebido"}), 400
@@ -143,7 +151,6 @@ def cadastrar_crianca():
 
         cursor = conn.cursor()
         
-        # Log dos valores que serão inseridos
         print(f"📝 Inserindo: nome={data.get('nome')}, data_nasc={data.get('data_nascimento')}, turma={data.get('turma')}")
 
         cursor.execute(
@@ -213,11 +220,9 @@ def relatorio_checkins():
 
         cursor = conn.cursor(dictionary=True)
 
-        # ✅ 1. Total de crianças cadastradas
         cursor.execute("SELECT COUNT(*) as total FROM criancas")
         total_criancas = cursor.fetchone()['total']
 
-        # ✅ 2. Frequência por turma
         cursor.execute("""
             SELECT turma, COUNT(*) as total
             FROM criancas
@@ -226,7 +231,6 @@ def relatorio_checkins():
         """)
         frequencia_por_turma = cursor.fetchall()
 
-        # ✅ 3. Últimos 10 check-ins (com nome da criança e status)
         cursor.execute("""
             SELECT c.nome, c.turma, ch.status, ch.data_checkin, ch.observacao_alerta
             FROM checkins ch
@@ -236,7 +240,6 @@ def relatorio_checkins():
         """)
         ultimos_checkins = cursor.fetchall()
 
-        # ✅ 4. Alertas recentes (últimos 5 alertas)
         cursor.execute("""
             SELECT c.nome, c.turma, ch.status, ch.data_checkin, ch.observacao_alerta
             FROM checkins ch
@@ -263,7 +266,7 @@ def relatorio_checkins():
         print(f"🔥 ERRO no relatório: {str(e)}")
         return jsonify({"error": f"Erro interno: {str(e)}"}), 500
         
-# ✅ 13. ROTA: WEBHOOK DA Z-API — RECEBE EVENTOS DO WHATSAPP
+# ✅ 13. ROTA: WEBHOOK DA Z-API
 @app.route('/webhook/zapi', methods=['POST'])
 def webhook_zapi():
     try:
@@ -273,48 +276,32 @@ def webhook_zapi():
             return jsonify({"status": "error", "message": "Payload vazio"}), 400
 
         event_type = payload.get('type')
-
-        # ✅ LOG DO EVENTO RECEBIDO
         print(f"📩 Webhook recebido | Tipo: {event_type}")
-        print(f"📦 Payload: {payload}")
 
-        # 🔍 Se for mensagem recebida
         if event_type == 'message.received':
-            sender = payload.get('sender')  # telefone no formato 5511999999999
+            sender = payload.get('sender')
             message_text = payload.get('body', '').strip()
-
             print(f"💬 Mensagem de {sender}: {message_text}")
 
-            # ✅ AQUI VOCÊ PODE INTEGRAR COM SEU BANCO!
-            # Ex: buscar se esse telefone é de um responsável cadastrado
-            # Ex: se a mensagem for "CADASTRAR: ...", processar cadastro
-
-            # 🚧 POR ENQUANTO, SÓ LOGAMOS — mas já tá RECEBENDO!
-            # Vamos adicionar a lógica de resposta automática abaixo 👇
-
-            # ✅ Responder automaticamente (opcional)
             if message_text.lower() in ['oi', 'ola', 'olá', 'bom dia', 'boa tarde', 'boa noite']:
                 responder_whatsapp(sender, "👋 Olá! Aqui é a equipe do Cultinho Kids da Igreja Mais de Cristo. Como podemos ajudar?")
 
-        # ✅ Se for status de mensagem (entregue, lida etc)
         elif event_type == 'message.status':
             message_id = payload.get('messageId')
             status = payload.get('status')
             print(f"📬 Status da mensagem {message_id}: {status}")
 
-        # ✅ Se for atualização de conexão
         elif event_type == 'connection.update':
             connection_status = payload.get('status')
             print(f"🔌 Conexão WhatsApp: {connection_status}")
 
-        # ✅ SEMPRE responda com 200 OK — senão a Z-API reenvia!
         return jsonify({"status": "success"}), 200
 
     except Exception as e:
         print(f"🔥 ERRO no webhook: {str(e)}")
         return jsonify({"status": "error", "message": str(e)}), 500
 
-# ✅ ROTA: ENVIAR QR CODE VIA Z-API (CHAMADA PELO FRONTEND)
+# ✅ ROTA: ENVIAR QR CODE VIA Z-API — AJUSTADA
 @app.route('/enviar-qrcode', methods=['POST'])
 def enviar_qrcode():
     try:
@@ -324,35 +311,37 @@ def enviar_qrcode():
         nomeCrianca = data.get('nomeCrianca')
         codigo = data.get('codigo')
 
-        # Validação básica
         if not all([numero, base64Image, nomeCrianca, codigo]):
             return jsonify({"error": "Dados incompletos"}), 400
 
-        # ✅ Garante que o número começa com 55
-        if not numero.startswith('55'):
-            numero = '55' + numero.replace('+', '').replace(' ', '')
+        # ✅ Limpa e valida número
+        numero = re.sub(r'\D', '', str(numero))
+        if len(numero) == 11 and numero.startswith('4'):
+            numero = '55' + numero
+        elif len(numero) == 10 and numero.startswith('4'):
+            numero = '55' + numero
+        elif len(numero) == 13 and numero.startswith('55'):
+            pass
+        else:
+            return jsonify({"error": "Número de telefone inválido"}), 400
 
-        # ✅ Mensagem personalizada
         mensagem = f"Olá! Aqui está o QR Code para check-in rápido do(a) {nomeCrianca} 🎉\nCódigo: *{codigo}*\nBasta escanear na entrada do culto!"
 
-        # ✅ URL da Z-API para envio de imagem
+        # ✅ URL SEM ESPAÇOS + FORMATO @s.whatsapp.net
         url = f"https://api.z-api.io/instances/{ZAPI_INSTANCE}/token/{ZAPI_TOKEN}/send-image"
-
         headers = {
             "Content-Type": "application/json"
         }
-
         payload = {
-            "phone": f"{numero}@s.whatsapp.net",
+            "phone": f"{numero}@s.whatsapp.net",  # ✅ FORMATO CORRETO PARA IMAGEM!
             "caption": mensagem,
             "image": base64Image
         }
 
-        # ✅ Envia requisição
         response = requests.post(url, json=payload, headers=headers, timeout=10)
 
         if response.status_code in [200, 201]:
-            print(f"✅ QR Code enviado para {numero}")
+            print(f"✅ QR Code enviado para {numero}@s.whatsapp.net")
             return jsonify({"status": "success", "message": "QR Code enviado com sucesso!"}), 200
         else:
             error_msg = response.text
@@ -363,27 +352,27 @@ def enviar_qrcode():
         print(f"🔥 Erro interno ao enviar QR Code: {str(e)}")
         return jsonify({"error": f"Erro interno: {str(e)}"}), 500
 
-# ✅ FUNÇÃO AUXILIAR: RESPONDER MENSAGEM VIA Z-API
+# ✅ FUNÇÃO AUXILIAR: RESPONDER MENSAGEM VIA Z-API — AJUSTADA
 def responder_whatsapp(telefone, mensagem):
-    """Envia uma mensagem de resposta via Z-API"""
     if not ZAPI_TOKEN or not ZAPI_INSTANCE:
         print("❌ Tokens da Z-API não configurados")
         return False
 
+    # ✅ URL SEM ESPAÇOS
     url = f"https://api.z-api.io/instances/{ZAPI_INSTANCE}/messages/text"
     headers = {
         "Client-Token": ZAPI_TOKEN,
         "Content-Type": "application/json"
     }
     payload = {
-        "phone": telefone,
+        "phone": f"{telefone}@c.us",  # ✅ FORMATO CORRETO!
         "message": mensagem
     }
 
     try:
         response = requests.post(url, json=payload, headers=headers, timeout=10)
         if response.status_code in [200, 201]:
-            print(f"✅ Resposta enviada para {telefone}")
+            print(f"✅ Resposta enviada para {telefone}@c.us")
             return True
         else:
             print(f"❌ Erro ao responder: {response.text}")
@@ -392,7 +381,7 @@ def responder_whatsapp(telefone, mensagem):
         print(f"❌ Erro na requisição de resposta: {e}")
         return False
         
-# ✅ 12. RODA LOCALMENTE (Render usa Gunicorn — ignora isso em produção)
+# ✅ RODA LOCALMENTE
 if __name__ == '__main__':
     port = int(os.getenv('PORT', 5000))
     app.run(host='0.0.0.0', port=port, debug=False)
