@@ -1,0 +1,87 @@
+<div class="card">
+    <h1>📲 Visualizar QR Code</h1>
+    <p>Selecione uma criança para visualizar ou reenviar seu QR Code.</p>
+    
+    <select id="selectCrianca" style="width: 100%; padding: 12px; margin: 20px 0; border-radius: 8px; border: 2px solid #007BFF;">
+        <option value="">Selecione uma criança...</option>
+    </select>
+    
+    <div id="qrcodeContainer" style="display: none; text-align: center; margin: 30px 0;">
+        <h3>QR Code para Check-in</h3>
+        <div id="qrcode" style="margin: 20px auto; width: 200px; height: 200px;"></div>
+        <p><strong>Código: <span id="codigoExibido"></span></strong></p>
+        <button id="btnReenviar" class="btn-alerta" style="margin-top: 15px; width: 100%;">
+            📲 Reenviar QR Code por WhatsApp
+        </button>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', async () => {
+        const selectCrianca = document.getElementById('selectCrianca');
+        const qrcodeContainer = document.getElementById('qrcodeContainer');
+        const qrcodeDiv = document.getElementById('qrcode');
+        const codigoExibido = document.getElementById('codigoExibido');
+        const btnReenviar = document.getElementById('btnReenviar');
+
+        try {
+            const response = await fetch('/listar-criancas');
+            const data = await response.json();
+            
+            data.criancas.forEach(crianca => {
+                const option = document.createElement('option');
+                option.value = crianca.id;
+                option.textContent = `${crianca.nome} - ${crianca.turma}`;
+                option.dataset.codigo = crianca.codigo_checkin;
+                selectCrianca.appendChild(option);
+            });
+        } catch (error) {
+            console.error('Erro ao carregar crianças:', error);
+        }
+
+        selectCrianca.addEventListener('change', () => {
+            const selectedOption = selectCrianca.options[selectCrianca.selectedIndex];
+            const criancaId = selectedOption.value;
+            const codigoCheckin = selectedOption.dataset.codigo;
+            
+            if (!criancaId) {
+                qrcodeContainer.style.display = 'none';
+                return;
+            }
+
+            const urlCheckin = `${window.location.origin}/checkin-auto.html?id=${criancaId}`;
+            
+            qrcodeDiv.innerHTML = '';
+            QRCode.toCanvas(qrcodeDiv, urlCheckin, { width: 200 }, function (error) {
+                if (error) console.error(error);
+            });
+            
+            codigoExibido.textContent = codigoCheckin;
+            qrcodeContainer.style.display = 'block';
+            
+            btnReenviar.onclick = () => {
+                const canvas = qrcodeDiv.querySelector('canvas');
+                const qrBase64 = canvas.toDataURL("image/png");
+                
+                fetch('/enviar-qrcode', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        numero: '5548998284104',
+                        base64Image: qrBase64,
+                        nomeCrianca: selectedOption.textContent.split(' - ')[0],
+                        codigo: codigoCheckin
+                    })
+                })
+                .then(r => r.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        alert('✅ QR Code reenviado com sucesso!');
+                    } else {
+                        alert('❌ Erro ao reenviar: ' + data.error);
+                    }
+                });
+            };
+        });
+    });
+</script>
