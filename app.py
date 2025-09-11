@@ -1,6 +1,6 @@
 import requests
 import os
-import re  # ✅ Adicionado para limpar telefone
+import re
 from dotenv import load_dotenv
 from flask import Flask, request, jsonify, send_from_directory
 from database import get_db_connection, close_db_connection
@@ -13,7 +13,8 @@ load_dotenv()
 app = Flask(__name__)
 
 # ✅ 3. Configurações da Z-API
-ZAPI_CLIENT_TOKEN = os.getenv("ZAPI_TOKEN")
+ZAPI_TOKEN = os.getenv("ZAPI_TOKEN")          # Token da instância (vai na URL)
+ZAPI_CLIENT_TOKEN = os.getenv("ZAPI_CLIENT_TOKEN")  # Token de segurança (vai no header)
 ZAPI_INSTANCE = os.getenv("ZAPI_INSTANCE")
 
 # ✅ 4. ROTA RAIZ
@@ -40,7 +41,6 @@ def enviar_whatsapp_alerta(crianca_id, motivo="Está precisando de você"):
 
     cursor = conn.cursor(dictionary=True)
     
-    # Busca dados da criança
     cursor.execute("SELECT nome FROM criancas WHERE id = %s", (crianca_id,))
     crianca = cursor.fetchone()
     if not crianca:
@@ -49,7 +49,6 @@ def enviar_whatsapp_alerta(crianca_id, motivo="Está precisando de você"):
         print("❌ Criança não encontrada")
         return False
 
-    # Busca responsáveis
     cursor.execute("SELECT nome, telefone_whatsapp FROM responsaveis WHERE crianca_id = %s", (crianca_id,))
     responsaveis = cursor.fetchall()
     cursor.close()
@@ -60,10 +59,10 @@ def enviar_whatsapp_alerta(crianca_id, motivo="Está precisando de você"):
         return False
 
     print(f"🔐 ZAPI_INSTANCE: {ZAPI_INSTANCE}")
-    print(f"🔐 ZAPI_TOKEN: {ZAPI_CLIENT_TOKEN[:5]}...")
+    print(f"🔐 ZAPI_TOKEN: {ZAPI_TOKEN[:5]}...")
+    print(f"🔐 ZAPI_CLIENT_TOKEN: {ZAPI_CLIENT_TOKEN[:5]}...")
 
     for resp in responsaveis:
-        # ✅ LIMPA e VALIDA telefone
         telefone = re.sub(r'\D', '', str(resp['telefone_whatsapp']))
         
         if len(telefone) == 11 and telefone.startswith('4'):
@@ -82,14 +81,14 @@ def enviar_whatsapp_alerta(crianca_id, motivo="Está precisando de você"):
                    f"📍 Pode vir até a Sala Kids? Estamos com ela(e) com carinho!\n\n" \
                    f"❤️ Equipe Mais de Cristo Canasvieiras"
 
-        # ✅ URL SEM ESPAÇOS + FORMATO @s.whatsapp.net
-        url = f"https://api.z-api.io/instances/{ZAPI_INSTANCE}/messages/text"  # ✅ REMOVIDOS OS ESPAÇOS!
+        # ✅ URL SEM ESPAÇOS + Client-Token no header
+        url = f"https://api.z-api.io/instances/{ZAPI_INSTANCE}/messages/text"
         headers = {
-            "Client-Token": ZAPI_CLIENT_TOKEN,
+            "Client-Token": ZAPI_CLIENT_TOKEN,  # ✅ Token de segurança
             "Content-Type": "application/json"
         }
         payload = {
-            "phone": f"{telefone}@s.whatsapp.net",  # ✅ MUDADO PARA @s.whatsapp.net
+            "phone": f"{telefone}@s.whatsapp.net",
             "message": mensagem
         }
 
@@ -126,7 +125,6 @@ def registrar_checkin():
     cursor.close()
     conn.close()
 
-    # Se for alerta, envia WhatsApp
     if status == 'alerta_enviado':
         sucesso = enviar_whatsapp_alerta(crianca_id, observacao)
         if not sucesso:
@@ -314,7 +312,6 @@ def enviar_qrcode():
         if not all([numero, base64Image, nomeCrianca, codigo]):
             return jsonify({"error": "Dados incompletos"}), 400
 
-        # ✅ Limpa e valida número
         numero = re.sub(r'\D', '', str(numero))
         if len(numero) == 11 and numero.startswith('4'):
             numero = '55' + numero
@@ -327,8 +324,8 @@ def enviar_qrcode():
 
         mensagem = f"Olá! Aqui está o QR Code para check-in rápido do(a) {nomeCrianca} 🎉\nCódigo: *{codigo}*\nBasta escanear na entrada do culto!"
 
-        # ✅ URL SEM ESPAÇOS + FORMATO @s.whatsapp.net
-        url = f"https://api.z-api.io/instances/{ZAPI_INSTANCE}/token/{ZAPI_TOKEN}/send-image"  # ✅ REMOVIDOS OS ESPAÇOS!
+        # ✅ URL SEM ESPAÇOS
+        url = f"https://api.z-api.io/instances/{ZAPI_INSTANCE}/token/{ZAPI_TOKEN}/send-image"
         headers = {
             "Content-Type": "application/json"
         }
@@ -358,14 +355,14 @@ def responder_whatsapp(telefone, mensagem):
         print("❌ Tokens da Z-API não configurados")
         return False
 
-    # ✅ URL SEM ESPAÇOS
-    url = f"https://api.z-api.io/instances/{ZAPI_INSTANCE}/messages/text"  # ✅ REMOVIDOS OS ESPAÇOS!
+    # ✅ URL SEM ESPAÇOS + Client-Token no header
+    url = f"https://api.z-api.io/instances/{ZAPI_INSTANCE}/messages/text"
     headers = {
-        "Client-Token": ZAPI_TOKEN,
+        "Client-Token": ZAPI_CLIENT_TOKEN,  # ✅ Token de segurança
         "Content-Type": "application/json"
     }
     payload = {
-        "phone": f"{telefone}@s.whatsapp.net",  # ✅ MUDADO PARA @s.whatsapp.net
+        "phone": f"{telefone}@s.whatsapp.net",
         "message": mensagem
     }
 
