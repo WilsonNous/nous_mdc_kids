@@ -82,13 +82,13 @@ def enviar_whatsapp_alerta(crianca_id, motivo="Está precisando de você"):
                    f"❤️ Equipe Mais de Cristo Canasvieiras"
 
         # ✅ URL SEM ESPAÇOS + Client-Token no header
-        url = f"https://api.z-api.io/instances/{ZAPI_INSTANCE}/messages/text"
+        url = f"https://api.z-api.io/instances/{ZAPI_INSTANCE}/token/{ZAPI_TOKEN}/send-text"
         headers = {
             "Client-Token": ZAPI_CLIENT_TOKEN,  # ✅ Token de segurança
             "Content-Type": "application/json"
         }
         payload = {
-            "phone": f"{telefone}@s.whatsapp.net",
+            "phone": telefone,
             "message": mensagem
         }
 
@@ -327,10 +327,11 @@ def enviar_qrcode():
         # ✅ URL SEM ESPAÇOS
         url = f"https://api.z-api.io/instances/{ZAPI_INSTANCE}/token/{ZAPI_TOKEN}/send-image"
         headers = {
+            "Client-Token": ZAPI_CLIENT_TOKEN,  # ✅ Token de segurança
             "Content-Type": "application/json"
         }
         payload = {
-            "phone": f"{numero}@s.whatsapp.net",
+            "phone": numero,
             "caption": mensagem,
             "image": base64Image
         }
@@ -356,13 +357,13 @@ def responder_whatsapp(telefone, mensagem):
         return False
 
     # ✅ URL SEM ESPAÇOS + Client-Token no header
-    url = f"https://api.z-api.io/instances/{ZAPI_INSTANCE}/messages/text"
+    url = f"https://api.z-api.io/instances/{ZAPI_INSTANCE}/token/{ZAPI_TOKEN}/send-text"
     headers = {
         "Client-Token": ZAPI_CLIENT_TOKEN,  # ✅ Token de segurança
         "Content-Type": "application/json"
     }
     payload = {
-        "phone": f"{telefone}@s.whatsapp.net",
+        "phone": telefone,
         "message": mensagem
     }
 
