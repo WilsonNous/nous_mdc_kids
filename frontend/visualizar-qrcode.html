@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visualizar QR Code</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header class="header-unificado">
+        <div class="header-logo">
+            <img src="logo.png" alt="Logo Ministério Infantil" class="logo">
+            <div>
+                <h2>Mais de Cristo Canasvieiras</h2>
+                <small>Ministério Infantil - Kids</small>
+            </div>
+        </div>
+        <nav class="menu-horizontal">
+            <a href="index.html" class="menu-item">📝 Cadastrar</a>
+            <a href="checkin.html" class="menu-item">✅ Check-in</a>
+            <a href="alerta-manual.html" class="menu-item active">🔔 Alerta Manual</a>
+            <a href="relatorios.html" class="menu-item">📊 Relatórios</a>
+        </nav>
+    </header>
+
+    <div class="container">
+        <div class="card">
+            <h1>📲 Visualizar QR Code</h1>
+            <p>Selecione uma criança para visualizar ou reenviar seu QR Code.</p>
+            
+            <select id="selectCrianca" style="width: 100%; padding: 12px; margin: 20px 0; border-radius: 8px; border: 2px solid #007BFF;">
+                <option value="">Selecione uma criança...</option>
+            </select>
+            
+            <div id="qrcodeContainer" style="display: none; text-align: center; margin: 30px 0;">
+                <h3>QR Code para Check-in</h3>
+                <div id="qrcode" style="margin: 20px auto; width: 200px; height: 200px;"></div>
+                <p><strong>Código: <span id="codigoExibido"></span></strong></p>
+                <button id="btnReenviar" class="btn-alerta" style="margin-top: 15px; width: 100%;">
+                    📲 Reenviar QR Code por WhatsApp
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const selectCrianca = document.getElementById('selectCrianca');
+            const qrcodeContainer = document.getElementById('qrcodeContainer');
+            const qrcodeDiv = document.getElementById('qrcode');
+            const codigoExibido = document.getElementById('codigoExibido');
+            const btnReenviar = document.getElementById('btnReenviar');
+
+            // Carrega lista de crianças
+            try {
+                const response = await fetch('/listar-criancas');
+                const data = await response.json();
+                
+                data.criancas.forEach(crianca => {
+                    const option = document.createElement('option');
+                    option.value = crianca.id;
+                    option.textContent = `${crianca.nome} - ${crianca.turma}`;
+                    option.dataset.codigo = crianca.codigo_checkin;
+                    selectCrianca.appendChild(option);
+                });
+            } catch (error) {
+                console.error('Erro ao carregar crianças:', error);
+            }
+
+            // Quando seleciona uma criança
+            selectCrianca.addEventListener('change', () => {
+                const selectedOption = selectCrianca.options[selectCrianca.selectedIndex];
+                const criancaId = selectedOption.value;
+                const codigoCheckin = selectedOption.dataset.codigo;
+                
+                if (!criancaId) {
+                    qrcodeContainer.style.display = 'none';
+                    return;
+                }
+
+                const urlCheckin = `${window.location.origin}/checkin-auto.html?id=${criancaId}`;
+                
+                // Gera QR Code
+                qrcodeDiv.innerHTML = '';
+                QRCode.toCanvas(qrcodeDiv, urlCheckin, { width: 200 }, function (error) {
+                    if (error) console.error(error);
+                });
+                
+                codigoExibido.textContent = codigoCheckin;
+                qrcodeContainer.style.display = 'block';
+                
+                // Configura botão de reenvio
+                btnReenviar.onclick = () => {
+                    const canvas = qrcodeDiv.querySelector('canvas');
+                    const qrBase64 = canvas.toDataURL("image/png");
+                    
+                    fetch('/enviar-qrcode', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            numero: '5548998284104', // Aqui você pode buscar o WhatsApp do responsável
+                            base64Image: qrBase64,
+                            nomeCrianca: selectedOption.textContent.split(' - ')[0],
+                            codigo: codigoCheckin
+                        })
+                    })
+                    .then(r => r.json())
+                    .then(data => {
+                        if (data.status === 'success') {
+                            alert('✅ QR Code reenviado com sucesso!');
+                        } else {
+                            alert('❌ Erro ao reenviar: ' + data.error);
+                        }
+                    });
+                };
+            });
+        });
+    </script>
+</body>
+</html>
