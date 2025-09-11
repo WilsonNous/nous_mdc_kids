@@ -50,9 +50,9 @@
         </nav>
     </header>
 
-    <!-- ✅ CONTEÚDO DINÂMICO (CARREGADO POR CADA PÁGINA) -->
+    <!-- ✅ CONTEÚDO DINÂMICO -->
     <div id="conteudo-dinamico" class="container">
-        <!-- O conteúdo de cada página será injetado aqui -->
+        <!-- Conteúdo será injetado aqui -->
     </div>
 
     <!-- ✅ RODAPÉ -->
@@ -184,10 +184,8 @@
     <!-- ✅ SCRIPT PARA CARREGAR CONTEÚDO DINÂMICO -->
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            // Obtém o nome da página da URL (ex: "index.html", "checkin.html")
             const path = window.location.pathname.split('/').pop();
             
-            // Mapeia página → arquivo de conteúdo
             const conteudos = {
                 'index.html': 'conteudo-cadastro.html',
                 'checkin.html': 'conteudo-checkin.html',
@@ -195,18 +193,17 @@
                 'relatorios.html': 'conteudo-relatorios.html',
                 'checkin-auto.html': 'conteudo-checkin-auto.html',
                 'visualizar-qrcode.html': 'conteudo-visualizar-qrcode.html',
-                '': 'conteudo-cadastro.html' // Página inicial
+                '': 'conteudo-cadastro.html'
             };
 
             const arquivoConteudo = conteudos[path] || 'conteudo-cadastro.html';
 
-            // Carrega o conteúdo dinâmico
             fetch(arquivoConteudo)
                 .then(response => response.text())
                 .then(html => {
                     document.getElementById('conteudo-dinamico').innerHTML = html;
                     
-                    // Se houver scripts no conteúdo, execute-os
+                    // Executa scripts do conteúdo
                     const scripts = document.getElementById('conteudo-dinamico').querySelectorAll('script');
                     scripts.forEach(oldScript => {
                         const newScript = document.createElement('script');
