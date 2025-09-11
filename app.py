@@ -103,7 +103,7 @@ def enviar_whatsapp_alerta(crianca_id, motivo="Está precisando de você"):
 
     return True
 
-# ✅ 8. ROTA: CHECK-IN
+# ✅ 8. ROTA: CHECK-IN — ATUALIZADA
 @app.route('/checkin', methods=['POST'])
 def registrar_checkin():
     data = request.json
@@ -122,17 +122,30 @@ def registrar_checkin():
     )
     conn.commit()
     checkin_id = cursor.lastrowid
+
+    # ✅ Busca nome e turma da criança
+    cursor.execute("SELECT nome, turma FROM criancas WHERE id = %s", (crianca_id,))
+    crianca = cursor.fetchone()
     cursor.close()
     conn.close()
 
     if status == 'alerta_enviado':
         sucesso = enviar_whatsapp_alerta(crianca_id, observacao)
         if not sucesso:
-            return jsonify({"success": True, "checkin_id": checkin_id, "warning": "Check-in feito, mas falha ao enviar WhatsApp"}), 201
+            return jsonify({
+                "success": True, 
+                "checkin_id": checkin_id,
+                "warning": "Check-in feito, mas falha ao enviar WhatsApp"
+            }), 201
 
-    return jsonify({"success": True, "checkin_id": checkin_id}), 201
+    return jsonify({
+        "success": True, 
+        "checkin_id": checkin_id,
+        "crianca_nome": crianca[0] if crianca else "Criança",
+        "crianca_turma": crianca[1] if crianca else "Turma não informada"
+    }), 201
 
-# ✅ 9. ROTA: CADASTRAR CRIANÇA
+# ✅ 9. ROTA: CADASTRAR CRIANÇA — ATUALIZADA
 @app.route('/cadastrar-crianca', methods=['POST'])
 def cadastrar_crianca():
     try:
@@ -149,26 +162,43 @@ def cadastrar_crianca():
 
         cursor = conn.cursor()
         
-        print(f"📝 Inserindo: nome={data.get('nome')}, data_nasc={data.get('data_nascimento')}, turma={data.get('turma')}")
+        # ✅ Gera código único
+        import random
+        import string
+        def gerar_codigo_unico(cursor):
+            while True:
+                codigo = 'CHK-' + ''.join(random.choices(string.ascii_uppercase + string.digits, k=6))
+                cursor.execute("SELECT id FROM criancas WHERE codigo_checkin = %s", (codigo,))
+                if not cursor.fetchone():
+                    return codigo
+
+        codigo_checkin = gerar_codigo_unico(cursor)
+        
+        print(f"📝 Inserindo: nome={data.get('nome')}, codigo={codigo_checkin}")
 
         cursor.execute(
-            "INSERT INTO criancas (nome, data_nascimento, turma, observacoes) VALUES (%s, %s, %s, %s)",
+            "INSERT INTO criancas (nome, data_nascimento, turma, observacoes, codigo_checkin) VALUES (%s, %s, %s, %s, %s)",
             (
                 data.get('nome'),
                 data.get('data_nascimento'),
                 data.get('turma'),
-                data.get('observacoes', '')
+                data.get('observacoes', ''),
+                codigo_checkin
             )
         )
         
         conn.commit()
         crianca_id = cursor.lastrowid
-        print(f"✅ Criança cadastrada com ID: {crianca_id}")
+        print(f"✅ Criança cadastrada com ID: {crianca_id} e código: {codigo_checkin}")
         
         cursor.close()
         conn.close()
         
-        return jsonify({"success": True, "crianca_id": crianca_id})
+        return jsonify({
+            "success": True, 
+            "crianca_id": crianca_id,
+            "codigo_checkin": codigo_checkin  # ✅ Retorna o código gerado
+        })
 
     except Exception as e:
         print(f"🔥 ERRO AO CADASTRAR CRIANÇA: {str(e)}")
