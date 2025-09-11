@@ -293,6 +293,10 @@ const processarCadastro = async (e) => {
         // 1. Cadastra a criança
         const dataCrianca = await api.cadastrarCrianca(crianca);
         
+        // ✅ Gera URL com o código retornado
+        const codigoCheckin = dataCrianca.codigo_checkin;
+        const urlCheckin = `${window.location.origin}/checkin-auto.html?id=${dataCrianca.crianca_id}`;
+                
         // 2. Cadastra os responsáveis
         for (let i = 0; i < responsaveis.length; i++) {
             const responsavel = {
