@@ -1,0 +1,40 @@
+<div class="card">
+    <div class="header">
+        <h1>👶 Cadastro do Cultinho Kids</h1>
+        <p>Preencha os dados da criança e dos responsáveis</p>
+    </div>
+
+    <form id="formCadastro">
+        <h3>Dados da Criança</h3>
+        <input type="text" id="nomeCrianca" placeholder="Nome da criança" required>
+        <input type="date" id="dataNascimento" placeholder="Data de nascimento" required>
+        <select id="turma" required>
+            <option value="">Selecione a turma</option>
+            <option value="2-3 anos">2-3 anos</option>
+            <option value="4-5 anos">4-5 anos</option>
+            <option value="6-8 anos">6-8 anos</option>
+            <option value="9-11 anos">9-11 anos</option>
+        </select>
+        <textarea id="observacoes" placeholder="Observações (alergias, medos, etc)"></textarea>
+
+        <h3>Responsável 1 (Obrigatório)</h3>
+        <input type="text" id="nomeResp1" placeholder="Nome do responsável" required>
+        <input type="tel" id="whatsappResp1" placeholder="(48) 99999-9999" required>
+
+        <h3>Responsável 2 (Opcional)</h3>
+        <input type="text" id="nomeResp2" placeholder="Nome do responsável">
+        <input type="tel" id="whatsappResp2" placeholder="WhatsApp (somente números)">
+
+        <button type="submit" id="btnSubmit">✅ Cadastrar Criança</button>
+        
+        <div class="progress-bar" id="progressBar">
+            <div class="progress" id="progress"></div>
+        </div>
+        <div class="status" id="status">Processando...</div>
+    </form>
+
+    <div id="mensagem" class="mensagem"></div>
+    <div id="debugInfo" class="debug-info"></div>
+</div>
+
+<script src="script.js"></script>
