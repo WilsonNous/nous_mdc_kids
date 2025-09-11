@@ -13,7 +13,7 @@ load_dotenv()
 app = Flask(__name__)
 
 # ✅ 3. Configurações da Z-API
-ZAPI_TOKEN = os.getenv("ZAPI_TOKEN")
+ZAPI_CLIENT_TOKEN = os.getenv("ZAPI_TOKEN")
 ZAPI_INSTANCE = os.getenv("ZAPI_INSTANCE")
 
 # ✅ 4. ROTA RAIZ
@@ -60,7 +60,7 @@ def enviar_whatsapp_alerta(crianca_id, motivo="Está precisando de você"):
         return False
 
     print(f"🔐 ZAPI_INSTANCE: {ZAPI_INSTANCE}")
-    print(f"🔐 ZAPI_TOKEN: {ZAPI_TOKEN[:5]}...")
+    print(f"🔐 ZAPI_TOKEN: {ZAPI_CLIENT_TOKEN[:5]}...")
 
     for resp in responsaveis:
         # ✅ LIMPA e VALIDA telefone
@@ -85,7 +85,7 @@ def enviar_whatsapp_alerta(crianca_id, motivo="Está precisando de você"):
         # ✅ URL SEM ESPAÇOS + FORMATO @s.whatsapp.net
         url = f"https://api.z-api.io/instances/{ZAPI_INSTANCE}/messages/text"  # ✅ REMOVIDOS OS ESPAÇOS!
         headers = {
-            "Client-Token": ZAPI_TOKEN,
+            "Client-Token": ZAPI_CLIENT_TOKEN,
             "Content-Type": "application/json"
         }
         payload = {
