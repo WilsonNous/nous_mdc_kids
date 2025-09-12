@@ -20,7 +20,7 @@ ZAPI_INSTANCE = os.getenv("ZAPI_INSTANCE")
 # ✅ 4. ROTA RAIZ
 @app.route('/')
 def home():
-    return send_from_directory('frontend', 'index.html')
+    return send_from_directory('frontend', 'login.html')
 
 # ✅ 5. ROTA CHECKIN PAGE
 @app.route('/checkin')
@@ -30,7 +30,7 @@ def checkin_page():
 # ✅ 5. ROTA FALBACK — DEVE VIR ANTES DA ROTA DE ARQUIVOS ESTÁTICOS!
 @app.route('/<path:path>')
 def fallback(path):
-    return send_from_directory('frontend', 'index.html')
+    return send_from_directory('frontend', 'login.html')
     
 # ✅ 6. ROTA PARA ARQUIVOS ESTÁTICOS
 @app.route('/<path:filename>')
