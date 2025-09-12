@@ -30,7 +30,7 @@ def checkin_page():
 # ✅ 5. ROTA FALBACK — DEVE VIR ANTES DA ROTA DE ARQUIVOS ESTÁTICOS!
 @app.route('/<path:path>')
 def fallback(path):
-    return send_from_directory('frontend', 'login.html')
+    return send_from_directory('frontend', 'menu.html')
     
 # ✅ 6. ROTA PARA ARQUIVOS ESTÁTICOS
 @app.route('/<path:filename>')
