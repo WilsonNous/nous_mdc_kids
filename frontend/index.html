@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ministério Infantil Mais de Cristo | Kids Alerta</title>
     <link rel="stylesheet" href="style.css">
+    <!-- ✅ REMOVIDOS OS ESPAÇOS EXTRAS NA URL -->
     <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
 </head>
 <body>
@@ -201,6 +202,10 @@
             fetch(arquivoConteudo)
                 .then(response => response.text())
                 .then(html => {
+                    // ✅ LIMPA O CONTEÚDO ANTIGO ANTES DE INJETAR O NOVO
+                    document.getElementById('conteudo-dinamico').innerHTML = '';
+                    
+                    // ✅ INJETA O NOVO CONTEÚDO
                     document.getElementById('conteudo-dinamico').innerHTML = html;
                     
                     // Executa scripts do conteúdo
