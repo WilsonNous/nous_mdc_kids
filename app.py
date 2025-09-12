@@ -437,7 +437,7 @@ def login():
         
         # ✅ Busca usuário ATIVO
         cursor.execute(
-            "SELECT id, nome, email, tipo_usuario as cargo FROM usuarios WHERE email = %s AND senha = %s AND ativo = TRUE",
+            "SELECT id, nome, email, tipo_usuario FROM usuarios WHERE email = %s AND senha = %s AND ativo = TRUE",
             (email, senha)
         )
         usuario = cursor.fetchone()
@@ -459,7 +459,7 @@ def login():
                     "id": usuario['id'],
                     "nome": usuario['nome'],
                     "email": usuario['email'],
-                    "cargo": usuario['cargo']
+                    "tipo_usuario": usuario['tipo_usuario']
                 }
             })
         else:
@@ -555,7 +555,7 @@ def authorized():
                 "id": usuario_id,
                 "nome": nome,
                 "email": email,
-                "cargo": "Voluntário"
+                "tipo_usuario": "Voluntário"
             }
 
         # ✅ Atualiza último login
@@ -568,7 +568,7 @@ def authorized():
         session['user_id'] = usuario['id']
         session['user_name'] = usuario['nome']
         session['user_email'] = usuario['email']
-        session['user_role'] = usuario['cargo']
+        session['user_role'] = usuario['tipo_usuario']
 
         return redirect('/checkin')
 
