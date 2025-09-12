@@ -3,10 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Visualizar QR Code</title>
+    <title>📲 Visualizar QR Code - Kids Alerta</title>
     <link rel="stylesheet" href="style.css">
+    <!-- ✅ REMOVIDOS OS ESPAÇOS EXTRAS -->
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
 </head>
 <body>
+    <!-- ✅ CABEÇALHO FIXO COM MENU DROPDOWN -->
     <header class="header-unificado">
         <div class="header-logo">
             <img src="logo.png" alt="Logo Ministério Infantil" class="logo">
@@ -16,10 +19,35 @@
             </div>
         </div>
         <nav class="menu-horizontal">
-            <a href="index.html" class="menu-item">📝 Cadastrar</a>
-            <a href="checkin.html" class="menu-item">✅ Check-in</a>
-            <a href="alerta-manual.html" class="menu-item active">🔔 Alerta Manual</a>
-            <a href="relatorios.html" class="menu-item">📊 Relatórios</a>
+            <div class="menu-dropdown">
+                <button class="menu-item">📝 Cadastro</button>
+                <div class="menu-submenu">
+                    <a href="index.html">➕ Nova Criança</a>
+                    <a href="visualizar-qrcode.html">📲 QR Codes</a>
+                </div>
+            </div>
+            <div class="menu-dropdown">
+                <button class="menu-item">✅ Check-in</button>
+                <div class="menu-submenu">
+                    <a href="checkin.html">📱 Presencial</a>
+                    <a href="checkin-auto.html">⚡ Automático</a>
+                </div>
+            </div>
+            <div class="menu-dropdown">
+                <button class="menu-item">🔔 Alertas</button>
+                <div class="menu-submenu">
+                    <a href="alerta-manual.html">🆘 Manual</a>
+                    <a href="historico-alertas.html">📊 Histórico</a>
+                </div>
+            </div>
+            <div class="menu-dropdown">
+                <button class="menu-item">📊 Relatórios</button>
+                <div class="menu-submenu">
+                    <a href="relatorios.html">📈 Geral</a>
+                    <a href="relatorio-presenca.html">✅ Presença</a>
+                    <a href="relatorio-alertas.html">🚨 Alertas</a>
+                </div>
+            </div>
         </nav>
     </header>
 
@@ -43,7 +71,132 @@
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
+    <!-- ✅ RODAPÉ -->
+    <footer class="footer">
+        <div class="container">
+            <p>© 2025 Ministério Infantil - Igreja Mais de Cristo Canasvieiras</p>
+            <p>Desenvolvido com ❤️ para servir às crianças e suas famílias</p>
+        </div>
+    </footer>
+
+    <!-- ✅ ESTILOS DO MENU DROPDOWN -->
+    <style>
+        /* ✅ Menu Dropdown */
+        .menu-dropdown {
+            position: relative;
+            display: inline-block;
+        }
+
+        .menu-dropdown .menu-item {
+            background: #007BFF;
+            color: white;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-width: 120px;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+        }
+
+        .menu-dropdown .menu-item:hover,
+        .menu-dropdown .menu-item.active {
+            background: #E6007A;
+            transform: translateY(-2px);
+        }
+
+        /* ✅ Submenu */
+        .menu-submenu {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background: white;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+            border-radius: 8px;
+            min-width: 200px;
+            z-index: 1000;
+            padding: 10px 0;
+            animation: fadeIn 0.2s ease;
+        }
+
+        .menu-dropdown:hover .menu-submenu,
+        .menu-dropdown:focus-within .menu-submenu {
+            display: block;
+        }
+
+        .menu-submenu a {
+            display: block;
+            padding: 10px 20px;
+            color: #003366;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .menu-submenu a:hover {
+            background: #f8f9fa;
+            color: #E6007A;
+            padding-left: 25px;
+        }
+
+        /* ✅ Animação */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ✅ Mobile */
+        @media (max-width: 767px) {
+            .menu-horizontal {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 8px;
+            }
+            
+            .menu-dropdown {
+                width: 100%;
+            }
+            
+            .menu-dropdown .menu-item {
+                width: 100%;
+                justify-content: space-between;
+            }
+            
+            .menu-submenu {
+                position: static;
+                box-shadow: none;
+                border-radius: 0;
+                border-bottom: 1px solid #eee;
+            }
+            
+            .menu-submenu a {
+                padding-left: 40px;
+            }
+        }
+
+        /* ✅ Rodapé */
+        .footer {
+            background: #1a253d;
+            color: white;
+            text-align: center;
+            padding: 20px 0;
+            margin-top: 50px;
+        }
+
+        .footer p {
+            margin: 5px 0;
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+    </style>
+
     <script>
         document.addEventListener('DOMContentLoaded', async () => {
             const selectCrianca = document.getElementById('selectCrianca');
@@ -99,7 +252,7 @@
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({
-                            numero: '5548998284104', // Aqui você pode buscar o WhatsApp do responsável
+                            numero: '5548998284104',
                             base64Image: qrBase64,
                             nomeCrianca: selectedOption.textContent.split(' - ')[0],
                             codigo: codigoCheckin
