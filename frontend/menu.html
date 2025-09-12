@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🏠 Menu Principal - Ministério Infantil</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- ✅ Verifica se o usuário está logado -->
+    <script>
+        if (!localStorage.getItem('usuarioLogado')) {
+            alert('⚠️ Acesso não autorizado. Faça login primeiro.');
+            window.location.href = 'login.html';
+        }
+    </script>
+
+    <div class="container">
+        <div class="header-logo" style="text-align: center; margin-bottom: 30px;">
+            <img src="logo.png" alt="Logo Ministério Infantil" class="logo" style="max-width: 150px;">
+            <h2>Mais de Cristo Canasvieiras</h2>
+            <small>Ministério Infantil - Kids</small>
+        </div>
+
+        <div class="card" style="text-align: center;">
+            <h1>🏠 Menu Principal</h1>
+            <p>Selecione uma opção abaixo:</p>
+
+            <div style="display: grid; gap: 15px; margin: 30px 0;">
+                <a href="index.html" class="menu-btn">📝 Cadastrar Criança</a>
+                <a href="checkin.html" class="menu-btn">✅ Check-in Presencial</a>
+                <a href="checkin-auto.html" class="menu-btn">⚡ Check-in Automático</a>
+                <a href="alerta-manual.html" class="menu-btn">🔔 Alerta Manual</a>
+                <a href="relatorios.html" class="menu-btn">📊 Relatórios</a>
+            </div>
+
+            <button onclick="logout()" class="btn-logout">🚪 Sair</button>
+        </div>
+    </div>
+
+    <style>
+        .menu-btn {
+            display: block;
+            background: #007BFF;
+            color: white;
+            padding: 15px;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 1.1rem;
+            transition: background 0.3s, transform 0.2s;
+            text-align: center;
+        }
+        .menu-btn:hover {
+            background: #0056b3;
+            transform: translateY(-2px);
+        }
+        .btn-logout {
+            background: #e74c3c;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: background 0.3s;
+        }
+        .btn-logout:hover {
+            background: #c0392b;
+        }
+    </style>
+
+    <script>
+        function logout() {
+            localStorage.removeItem('usuarioLogado');
+            alert('✅ Você saiu com sucesso!');
+            window.location.href = 'login.html';
+        }
+    </script>
+</body>
+</html>
