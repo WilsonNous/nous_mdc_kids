@@ -400,15 +400,25 @@ def login():
             return jsonify({"error": "Erro ao conectar ao banco"}), 500
         
         cursor = conn.cursor(dictionary=True)
+        
+        # ✅ Busca usuário ATIVO
         cursor.execute(
-            "SELECT id, nome, email, cargo FROM usuarios WHERE email = %s AND senha = %s AND ativo = TRUE",
+            "SELECT id, nome, email, tipo_usuario as cargo FROM usuarios WHERE email = %s AND senha = %s AND ativo = TRUE",
             (email, senha)
         )
         usuario = cursor.fetchone()
-        cursor.close()
-        conn.close()
         
         if usuario:
+            # ✅ Atualiza ultimo_login
+            cursor.execute(
+                "UPDATE usuarios SET ultimo_login = NOW() WHERE id = %s",
+                (usuario['id'],)
+            )
+            conn.commit()
+            
+            cursor.close()
+            conn.close()
+            
             return jsonify({
                 "success": True,
                 "usuario": {
@@ -419,6 +429,8 @@ def login():
                 }
             })
         else:
+            cursor.close()
+            conn.close()
             return jsonify({"error": "E-mail ou senha inválidos"}), 401
             
     except Exception as e:
