@@ -181,7 +181,7 @@
         }
     </style>
 
-    <!-- ✅ SCRIPT PARA CARREGAR CONTEÚDO DINÂMICO -->
+    // ✅ SCRIPT PARA CARREGAR CONTEÚDO DINÂMICO
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const path = window.location.pathname.split('/').pop();
@@ -195,9 +195,9 @@
                 'visualizar-qrcode.html': 'conteudo-visualizar-qrcode.html',
                 '': 'conteudo-cadastro.html'
             };
-
+    
             const arquivoConteudo = conteudos[path] || 'conteudo-cadastro.html';
-
+    
             fetch(arquivoConteudo)
                 .then(response => response.text())
                 .then(html => {
@@ -214,6 +214,20 @@
                         }
                         oldScript.parentNode.replaceChild(newScript, oldScript);
                     });
+    
+                    // ✅ INICIALIZA O CADASTRO SE ESTIVER NA PÁGINA CERTA
+                    if (path === 'index.html' || path === '') {
+                        if (typeof window.inicializarCadastro === 'function') {
+                            window.inicializarCadastro();
+                        }
+                    }
+    
+                    // ✅ INICIALIZA OUTRAS PÁGINAS SE NECESSÁRIO (ex: checkin.js)
+                    if (path === 'checkin.html') {
+                        if (typeof window.inicializarCheckin === 'function') {
+                            window.inicializarCheckin();
+                        }
+                    }
                 })
                 .catch(error => {
                     console.error('Erro ao carregar conteúdo:', error);
