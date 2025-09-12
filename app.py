@@ -342,14 +342,19 @@ def webhook_zapi():
 def enviar_qrcode():
     try:
         data = request.get_json()
+        if not 
+            return jsonify({"error": "Nenhum dado recebido"}), 400
+
         numero = data.get('numero')
         base64Image = data.get('base64Image')
         nomeCrianca = data.get('nomeCrianca')
         codigo = data.get('codigo')
 
+        # ✅ Validação mínima
         if not all([numero, base64Image, nomeCrianca, codigo]):
-            return jsonify({"error": "Dados incompletos"}), 400
+            return jsonify({"error": "Dados incompletos: número, base64, nome e código são obrigatórios"}), 400
 
+        # ✅ Limpa o número
         numero = re.sub(r'\D', '', str(numero))
         if len(numero) == 11 and numero.startswith('4'):
             numero = '55' + numero
@@ -358,14 +363,23 @@ def enviar_qrcode():
         elif len(numero) == 13 and numero.startswith('55'):
             pass
         else:
-            return jsonify({"error": "Número de telefone inválido"}), 400
+            return jsonify({"error": "Número de telefone inválido. Formato esperado: 55XXYYYYYYYYY"}), 400
 
-        mensagem = f"Olá! Aqui está o QR Code para check-in rápido do(a) {nomeCrianca} 🎉\nCódigo: *{codigo}*\nBasta escanear na entrada do culto!"
+        # ✅ VALIDAÇÃO CRÍTICA: Remove prefixo do base64 se houver
+        if base64Image.startswith('image'):
+            base64Image = base64Image.split(',')[1]  # Remove "data:image/png;base64,"
 
-        # ✅ URL SEM ESPAÇOS
+        # ✅ Verifica se é base64 válido (mínimo)
+        if len(base64Image) < 100:
+            return jsonify({"error": "Imagem base64 inválida ou corrompida"}), 400
+
+        # ✅ Monta mensagem
+        mensagem = f"Olá! Aqui está o QR Code para check-in rápido do(a) {nomeCrianca} 🎉\nCódigo: *{codigo}*\nBasta escanear na entrada do culto!\n\n❤️ Igreja Mais de Cristo - Canasvieiras"
+
+        # ✅ URL CORRETA — SEM ESPAÇOS!
         url = f"https://api.z-api.io/instances/{ZAPI_INSTANCE}/token/{ZAPI_TOKEN}/send-image"
         headers = {
-            "Client-Token": ZAPI_CLIENT_TOKEN,  # ✅ Token de segurança
+            "Client-Token": ZAPI_CLIENT_TOKEN,
             "Content-Type": "application/json"
         }
         payload = {
@@ -374,18 +388,35 @@ def enviar_qrcode():
             "image": base64Image
         }
 
-        response = requests.post(url, json=payload, headers=headers, timeout=10)
+        # ✅ LOG DA URL PARA DEBUG (apenas em desenvolvimento!)
+        print(f"🔗 Enviando QR para {numero} | URL: {url}")
+        print(f"🖼️ Base64 length: {len(base64Image)}")
+
+        response = requests.post(url, json=payload, headers=headers, timeout=15)
 
         if response.status_code in [200, 201]:
-            print(f"✅ QR Code enviado para {numero}@s.whatsapp.net")
-            return jsonify({"status": "success", "message": "QR Code enviado com sucesso!"}), 200
+            print(f"✅ QR Code enviado com sucesso para {numero}")
+            return jsonify({
+                "status": "success",
+                "message": "QR Code enviado com sucesso!",
+                "received": {
+                    "numero": numero,
+                    "nome": nomeCrianca,
+                    "codigo": codigo
+                }
+            }), 200
         else:
             error_msg = response.text
-            print(f"❌ Erro ao enviar QR Code: {error_msg}")
-            return jsonify({"error": f"Erro na API: {error_msg}"}), 500
+            print(f"❌ Erro na API Z-API: {response.status_code} - {error_msg}")
+            return jsonify({
+                "error": f"Erro na API Z-API ({response.status_code}): {error_msg}",
+                "payload_sent": payload
+            }), 500
 
     except Exception as e:
-        print(f"🔥 Erro interno ao enviar QR Code: {str(e)}")
+        print(f"🔥 ERRO INTERNO ao enviar QR Code: {str(e)}")
+        import traceback
+        traceback.print_exc()
         return jsonify({"error": f"Erro interno: {str(e)}"}), 500
 
 @app.route('/login', methods=['POST'])
