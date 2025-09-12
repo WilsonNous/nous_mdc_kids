@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔐 Login - Ministério Infantil Mais de Cristo</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container" style="max-width: 400px; margin: 50px auto;">
+        <div class="card">
+            <div class="header">
+                <img src="logo.png" alt="Logo Ministério Infantil" style="max-width: 120px; margin: 0 auto 20px;">
+                <h1>🔐 Acesso Restrito</h1>
+                <p>Ministério Infantil - Kids</p>
+            </div>
+
+            <form id="formLogin">
+                <input type="text" id="usuario" placeholder="Usuário" required>
+                <input type="password" id="senha" placeholder="Senha" required>
+                <button type="submit" class="btn-login">✅ Entrar</button>
+            </form>
+
+            <div id="mensagem" class="mensagem" style="margin-top: 20px;"></div>
+        </div>
+    </div>
+
+    <style>
+        .btn-login {
+            background: #E6007A;
+            color: white;
+            width: 100%;
+            padding: 15px;
+            font-size: 1.1rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        .btn-login:hover {
+            background: #C6006A;
+        }
+    </style>
+
+    <script>
+        document.getElementById('formLogin').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const usuario = document.getElementById('usuario').value.trim();
+            const senha = document.getElementById('senha').value.trim();
+            const msgDiv = document.getElementById('mensagem');
+            
+            // ✅ Credenciais fixas (para MVP — depois migramos para banco)
+            if (usuario === 'admin' && senha === 'mdc2025') {
+                msgDiv.className = 'mensagem sucesso';
+                msgDiv.textContent = '✅ Acesso concedido!';
+                
+                // Salva no localStorage (simples, mas funcional)
+                localStorage.setItem('usuarioLogado', usuario);
+                
+                // Redireciona após 1 segundo
+                setTimeout(() => {
+                    window.location.href = 'menu.html';
+                }, 1000);
+            } else {
+                msgDiv.className = 'mensagem erro';
+                msgDiv.textContent = '❌ Usuário ou senha inválidos.';
+            }
+        });
+    </script>
+</body>
+</html>
