@@ -385,6 +385,46 @@ def enviar_qrcode():
         print(f"🔥 Erro interno ao enviar QR Code: {str(e)}")
         return jsonify({"error": f"Erro interno: {str(e)}"}), 500
 
+@app.route('/login', methods=['POST'])
+def login():
+    try:
+        data = request.json
+        email = data.get('email')
+        senha = data.get('senha')
+        
+        if not email or not senha:
+            return jsonify({"error": "E-mail e senha são obrigatórios"}), 400
+        
+        conn = get_db_connection()
+        if not conn:
+            return jsonify({"error": "Erro ao conectar ao banco"}), 500
+        
+        cursor = conn.cursor(dictionary=True)
+        cursor.execute(
+            "SELECT id, nome, email, cargo FROM usuarios WHERE email = %s AND senha = %s AND ativo = TRUE",
+            (email, senha)
+        )
+        usuario = cursor.fetchone()
+        cursor.close()
+        conn.close()
+        
+        if usuario:
+            return jsonify({
+                "success": True,
+                "usuario": {
+                    "id": usuario['id'],
+                    "nome": usuario['nome'],
+                    "email": usuario['email'],
+                    "cargo": usuario['cargo']
+                }
+            })
+        else:
+            return jsonify({"error": "E-mail ou senha inválidos"}), 401
+            
+    except Exception as e:
+        print(f"Erro no login: {str(e)}")
+        return jsonify({"error": "Erro interno no servidor"}), 500
+
 # ✅ FUNÇÃO AUXILIAR: RESPONDER MENSAGEM VIA Z-API — AJUSTADA
 def responder_whatsapp(telefone, mensagem):
     if not ZAPI_TOKEN or not ZAPI_INSTANCE:
