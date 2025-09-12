@@ -29,6 +29,11 @@ def home():
 def checkin_page():
     return send_from_directory('frontend', 'checkin.html')
 
+# ✅ 5. ROTA MENU PAGE
+@app.route('/menu')
+def checkin_page():
+    return send_from_directory('frontend', 'menu.html')
+
 # ✅ 6. ROTA PARA ARQUIVOS ESTÁTICOS
 @app.route('/<path:filename>')
 def static_files(filename):
