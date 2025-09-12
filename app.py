@@ -31,7 +31,7 @@ def checkin_page():
 
 # ✅ 5. ROTA MENU PAGE
 @app.route('/menu')
-def checkin_page():
+def menu_page():
     return send_from_directory('frontend', 'menu.html')
 
 # ✅ 6. ROTA PARA ARQUIVOS ESTÁTICOS
