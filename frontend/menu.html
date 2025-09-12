@@ -9,7 +9,8 @@
 <body>
     <!-- ✅ Verifica se o usuário está logado -->
     <script>
-        if (!localStorage.getItem('usuarioLogado')) {
+        const usuario = JSON.parse(localStorage.getItem('usuarioLogado'));
+        if (!usuario) {
             alert('⚠️ Acesso não autorizado. Faça login primeiro.');
             window.location.href = 'login.html';
         }
@@ -20,6 +21,8 @@
             <img src="logo.png" alt="Logo Ministério Infantil" class="logo" style="max-width: 150px;">
             <h2>Mais de Cristo Canasvieiras</h2>
             <small>Ministério Infantil - Kids</small>
+            <!-- ✅ Mostra quem está logado -->
+            <p style="margin-top: 10px; color: #2c3e50;">👤 Logado como: <strong id="nomeUsuario"></strong></p>
         </div>
 
         <div class="card" style="text-align: center;">
@@ -72,6 +75,14 @@
     </style>
 
     <script>
+        // Mostra nome do usuário
+        document.addEventListener('DOMContentLoaded', function() {
+            const usuario = JSON.parse(localStorage.getItem('usuarioLogado'));
+            if (usuario) {
+                document.getElementById('nomeUsuario').textContent = usuario.nome;
+            }
+        });
+        
         function logout() {
             localStorage.removeItem('usuarioLogado');
             alert('✅ Você saiu com sucesso!');
