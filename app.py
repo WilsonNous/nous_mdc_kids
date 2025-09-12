@@ -2,15 +2,17 @@ import requests
 import os
 import re
 from dotenv import load_dotenv
-from flask import Flask, request, jsonify, send_from_directory
+from flask import Flask, request, jsonify, send_from_directory, session
 from database import get_db_connection, close_db_connection
 from datetime import datetime
+from flask_oauthlib.client import OAuth
 
 # ✅ 1. Carrega variáveis de ambiente
 load_dotenv()
 
 # ✅ 2. CRIA A INSTÂNCIA DO FLASK
 app = Flask(__name__)
+app.secret_key = os.getenv('FLASK_SECRET_KEY', 'F1@skM1cr0W3bApp*Key*UltraSecure')
 
 # ✅ 3. Configurações da Z-API
 ZAPI_TOKEN = os.getenv("ZAPI_TOKEN")          # Token da instância (vai na URL)
@@ -466,6 +468,82 @@ def responder_whatsapp(telefone, mensagem):
     except Exception as e:
         print(f"❌ Erro na requisição de resposta: {e}")
         return False
+
+# ✅ Configuração OAuth Google
+oauth = OAuth(app)
+google = oauth.remote_app(
+    'google',
+    consumer_key=os.getenv('GOOGLE_CLIENT_ID'),
+    consumer_secret=os.getenv('GOOGLE_CLIENT_SECRET'),
+    request_token_params={
+        'scope': 'email profile',
+        'response_type': 'code'
+    },
+    base_url='https://www.googleapis.com/oauth2/v1/',
+    request_token_url=None,
+    access_token_method='POST',
+    access_token_url='https://accounts.google.com/o/oauth2/token',
+    authorize_url='https://accounts.google.com/o/oauth2/auth',
+)
+
+@app.route('/login/google')
+def login_google():
+    return google.authorize(callback=url_for('authorized', _external=True))
+
+@app.route('/login/google/callback')
+def authorized():
+    resp = google.authorized_response()
+    if resp is None or resp.get('access_token') is None:
+        return jsonify({"error": "Acesso negado."}), 400
+
+    session['google_token'] = (resp['access_token'], '')
+    me = google.get('userinfo')
+
+    email = me.data.get('email')
+    nome = me.data.get('name')
+
+    if not email:
+        return jsonify({"error": "Email não disponível."}), 400
+
+    # ✅ Busca ou cria usuário no banco
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+
+    cursor.execute("SELECT id, nome, email, tipo_usuario FROM usuarios WHERE email = %s", (email,))
+    usuario = cursor.fetchone()
+
+    if not usuario:
+        # ✅ Cria novo usuário se não existir (tipo: voluntário)
+        cursor.execute("""
+            INSERT INTO usuarios (nome, email, tipo_usuario, ativo, created_at) 
+            VALUES (%s, %s, %s, TRUE, NOW())
+        """, (nome, email, 'Voluntário'))
+        conn.commit()
+        usuario_id = cursor.lastrowid
+        usuario = {
+            "id": usuario_id,
+            "nome": nome,
+            "email": email,
+            "cargo": "Voluntário"
+        }
+
+    # ✅ Atualiza último login
+    cursor.execute("UPDATE usuarios SET ultimo_login = NOW() WHERE id = %s", (usuario['id'],))
+    conn.commit()
+    cursor.close()
+    conn.close()
+
+    # ✅ Cria sessão (ou JWT futuro)
+    session['user_id'] = usuario['id']
+    session['user_name'] = usuario['nome']
+    session['user_email'] = usuario['email']
+    session['user_role'] = usuario['cargo']
+
+    return redirect('/dashboard')  # Ou onde você quer direcionar após login
+
+@google.tokengetter
+def get_google_oauth_token():
+    return session.get('google_token')
 
 # ✅ RODA LOCALMENTE
 if __name__ == '__main__':
