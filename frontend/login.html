@@ -174,6 +174,45 @@
                 </div>
                 
                 <button type="submit" class="btn-login">✅ Entrar</button>
+                <!-- ✅ Botão Login com Google -->
+                <div style="margin: 25px 0; text-align: center;">
+                    <a href="/login/google" class="btn-google">
+                        <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" width="20" style="vertical-align: middle; margin-right: 8px;">
+                        <span style="font-size: 1rem; color: #333; font-weight: 500;">Entrar com Google</span>
+                    </a>
+                </div>
+                
+                <style>
+                .btn-google {
+                    display: inline-flex;
+                    align-items: center;
+                    justify-content: center;
+                    background-color: #ffffff;
+                    border: 1px solid #dadce0;
+                    border-radius: 8px;
+                    padding: 12px 24px;
+                    font-size: 16px;
+                    color: #333;
+                    text-decoration: none;
+                    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+                    transition: all 0.3s ease;
+                    font-family: 'Arial', sans-serif;
+                    width: 100%;
+                    max-width: 300px;
+                    margin: 0 auto;
+                }
+                
+                .btn-google:hover {
+                    background-color: #f8f9fa;
+                    border-color: #cdd0d4;
+                    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+                    transform: translateY(-1px);
+                }
+                
+                .btn-google:active {
+                    transform: translateY(0);
+                }
+                </style>
             </form>
 
             <div class="loading" id="loading">
