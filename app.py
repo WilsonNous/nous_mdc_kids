@@ -342,7 +342,7 @@ def webhook_zapi():
 def enviar_qrcode():
     try:
         data = request.get_json()
-        if not 
+        if not data:
             return jsonify({"error": "Nenhum dado recebido"}), 400
 
         numero = data.get('numero')
