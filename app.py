@@ -2,10 +2,10 @@ import requests
 import os
 import re
 from dotenv import load_dotenv
-from flask import Flask, request, jsonify, send_from_directory, session
+from flask import Flask, request, jsonify, send_from_directory, session, redirect, url_for
 from database import get_db_connection, close_db_connection
 from datetime import datetime
-from flask_oauthlib.client import OAuth
+from authlib.integrations.flask_client import OAuth  # ✅ NOVA BIBLIOTECA MODERNA
 
 # ✅ 1. Carrega variáveis de ambiente
 load_dotenv()
@@ -34,13 +34,12 @@ def checkin_page():
 def static_files(filename):
     return send_from_directory('frontend', filename)
 
-# ✅ 5. ROTA FALBACK — DEVE VIR ANTES DA ROTA DE ARQUIVOS ESTÁTICOS!
+# ✅ 7. ROTA FALBACK — DEVE VIR ANTES DA ROTA DE ARQUIVOS ESTÁTICOS!
 @app.route('/<path:path>')
 def fallback(path):
     return send_from_directory('frontend', 'login.html')
-    
 
-# ✅ 7. FUNÇÃO DE ENVIO DE WHATSAPP — AJUSTADA
+# ✅ 8. FUNÇÃO DE ENVIO DE WHATSAPP — AJUSTADA
 def enviar_whatsapp_alerta(crianca_id, motivo="Está precisando de você"):
     conn = get_db_connection()
     if not conn:
@@ -92,7 +91,7 @@ def enviar_whatsapp_alerta(crianca_id, motivo="Está precisando de você"):
         # ✅ URL SEM ESPAÇOS + Client-Token no header
         url = f"https://api.z-api.io/instances/{ZAPI_INSTANCE}/token/{ZAPI_TOKEN}/send-text"
         headers = {
-            "Client-Token": ZAPI_CLIENT_TOKEN,  # ✅ Token de segurança
+            "Client-Token": ZAPI_CLIENT_TOKEN,
             "Content-Type": "application/json"
         }
         payload = {
@@ -111,7 +110,7 @@ def enviar_whatsapp_alerta(crianca_id, motivo="Está precisando de você"):
 
     return True
 
-# ✅ 8. ROTA: CHECK-IN — ATUALIZADA
+# ✅ 9. ROTA: CHECK-IN — ATUALIZADA
 @app.route('/checkin', methods=['POST'])
 def registrar_checkin():
     data = request.json
@@ -153,7 +152,7 @@ def registrar_checkin():
         "crianca_turma": crianca[1] if crianca else "Turma não informada"
     }), 201
 
-# ✅ 9. ROTA: CADASTRAR CRIANÇA — ATUALIZADA
+# ✅ 10. ROTA: CADASTRAR CRIANÇA — ATUALIZADA
 @app.route('/cadastrar-crianca', methods=['POST'])
 def cadastrar_crianca():
     try:
@@ -205,7 +204,7 @@ def cadastrar_crianca():
         return jsonify({
             "success": True, 
             "crianca_id": crianca_id,
-            "codigo_checkin": codigo_checkin  # ✅ Retorna o código gerado
+            "codigo_checkin": codigo_checkin
         })
 
     except Exception as e:
@@ -214,7 +213,7 @@ def cadastrar_crianca():
         traceback.print_exc()
         return jsonify({"error": f"Erro interno: {str(e)}"}), 500
 
-# ✅ 10. ROTA: CADASTRAR RESPONSÁVEL
+# ✅ 11. ROTA: CADASTRAR RESPONSÁVEL
 @app.route('/cadastrar-responsavel', methods=['POST'])
 def cadastrar_responsavel():
     data = request.json
@@ -232,7 +231,7 @@ def cadastrar_responsavel():
     conn.close()
     return jsonify({"success": True})
 
-# ✅ 11. ROTA: LISTAR CRIANÇAS
+# ✅ 12. ROTA: LISTAR CRIANÇAS
 @app.route('/listar-criancas', methods=['GET'])
 def listar_criancas():
     conn = get_db_connection()
@@ -246,7 +245,7 @@ def listar_criancas():
     conn.close()
     return jsonify({"success": True, "criancas": criancas})
 
-# ✅ 14. ROTA: RELATÓRIO COMPLETO DE CHECKINS
+# ✅ 13. ROTA: RELATÓRIO COMPLETO DE CHECKINS
 @app.route('/relatorio-checkins', methods=['GET'])
 def relatorio_checkins():
     try:
@@ -302,7 +301,7 @@ def relatorio_checkins():
         print(f"🔥 ERRO no relatório: {str(e)}")
         return jsonify({"error": f"Erro interno: {str(e)}"}), 500
         
-# ✅ 13. ROTA: WEBHOOK DA Z-API
+# ✅ 14. ROTA: WEBHOOK DA Z-API
 @app.route('/webhook/zapi', methods=['POST'])
 def webhook_zapi():
     try:
@@ -337,7 +336,7 @@ def webhook_zapi():
         print(f"🔥 ERRO no webhook: {str(e)}")
         return jsonify({"status": "error", "message": str(e)}), 500
 
-# ✅ ROTA: ENVIAR QR CODE VIA Z-API — AJUSTADA
+# ✅ 15. ROTA: ENVIAR QR CODE VIA Z-API — AJUSTADA
 @app.route('/enviar-qrcode', methods=['POST'])
 def enviar_qrcode():
     try:
@@ -366,8 +365,8 @@ def enviar_qrcode():
             return jsonify({"error": "Número de telefone inválido. Formato esperado: 55XXYYYYYYYYY"}), 400
 
         # ✅ VALIDAÇÃO CRÍTICA: Remove prefixo do base64 se houver
-        if base64Image.startswith('image'):
-            base64Image = base64Image.split(',')[1]  # Remove "data:image/png;base64,"
+        if base64Image.startswith('data:image'):
+            base64Image = base64Image.split(',')[1]
 
         # ✅ Verifica se é base64 válido (mínimo)
         if len(base64Image) < 100:
@@ -419,6 +418,7 @@ def enviar_qrcode():
         traceback.print_exc()
         return jsonify({"error": f"Erro interno: {str(e)}"}), 500
 
+# ✅ 16. ROTA: LOGIN COM EMAIL/SENHA
 @app.route('/login', methods=['POST'])
 def login():
     try:
@@ -471,7 +471,7 @@ def login():
         print(f"Erro no login: {str(e)}")
         return jsonify({"error": "Erro interno no servidor"}), 500
 
-# ✅ FUNÇÃO AUXILIAR: RESPONDER MENSAGEM VIA Z-API — AJUSTADA
+# ✅ 17. FUNÇÃO AUXILIAR: RESPONDER MENSAGEM VIA Z-API — AJUSTADA
 def responder_whatsapp(telefone, mensagem):
     if not ZAPI_TOKEN or not ZAPI_INSTANCE:
         print("❌ Tokens da Z-API não configurados")
@@ -480,7 +480,7 @@ def responder_whatsapp(telefone, mensagem):
     # ✅ URL SEM ESPAÇOS + Client-Token no header
     url = f"https://api.z-api.io/instances/{ZAPI_INSTANCE}/token/{ZAPI_TOKEN}/send-text"
     headers = {
-        "Client-Token": ZAPI_CLIENT_TOKEN,  # ✅ Token de segurança
+        "Client-Token": ZAPI_CLIENT_TOKEN,
         "Content-Type": "application/json"
     }
     payload = {
@@ -500,38 +500,35 @@ def responder_whatsapp(telefone, mensagem):
         print(f"❌ Erro na requisição de resposta: {e}")
         return False
 
-# ✅ Configuração OAuth Google
+# ✅ 18. CONFIGURAÇÃO GOOGLE AUTH — MODERNA E FUNCIONAL (AUTHLIB)
 oauth = OAuth(app)
-google = oauth.remote_app(
-    'google',
-    consumer_key=os.getenv('GOOGLE_CLIENT_ID'),
-    consumer_secret=os.getenv('GOOGLE_CLIENT_SECRET'),
-    request_token_params={
-        'scope': 'email profile',
-        'response_type': 'code'
-    },
-    base_url='https://www.googleapis.com/oauth2/v1/',
-    request_token_url=None,
-    access_token_method='POST',
-    access_token_url='https://accounts.google.com/o/oauth2/token',
-    authorize_url='https://accounts.google.com/o/oauth2/auth',
+google = oauth.register(
+    name='google',
+    client_id=os.getenv('GOOGLE_CLIENT_ID'),
+    client_secret=os.getenv('GOOGLE_CLIENT_SECRET'),
+    server_metadata_url='https://accounts.google.com/.well-known/openid-configuration',
+    client_kwargs={
+        'scope': 'openid email profile',
+        'prompt': 'select_account'
+    }
 )
 
 @app.route('/login/google')
 def login_google():
-    return google.authorize(callback=url_for('authorized', _external=True))
+    redirect_uri = url_for('authorized', _external=True)
+    return google.authorize_redirect(redirect_uri)
 
 @app.route('/login/google/callback')
 def authorized():
-    resp = google.authorized_response()
-    if resp is None or resp.get('access_token') is None:
+    token = google.authorize_access_token()
+    if not token:
         return jsonify({"error": "Acesso negado."}), 400
 
-    session['google_token'] = (resp['access_token'], '')
-    me = google.get('userinfo')
+    resp = google.get('https://www.googleapis.com/oauth2/v1/userinfo')
+    userinfo = resp.json()
 
-    email = me.data.get('email')
-    nome = me.data.get('name')
+    email = userinfo.get('email')
+    nome = userinfo.get('name')
 
     if not email:
         return jsonify({"error": "Email não disponível."}), 400
@@ -544,7 +541,6 @@ def authorized():
     usuario = cursor.fetchone()
 
     if not usuario:
-        # ✅ Cria novo usuário se não existir (tipo: voluntário)
         cursor.execute("""
             INSERT INTO usuarios (nome, email, tipo_usuario, ativo, created_at) 
             VALUES (%s, %s, %s, TRUE, NOW())
@@ -564,19 +560,15 @@ def authorized():
     cursor.close()
     conn.close()
 
-    # ✅ Cria sessão (ou JWT futuro)
+    # ✅ Cria sessão
     session['user_id'] = usuario['id']
     session['user_name'] = usuario['nome']
     session['user_email'] = usuario['email']
     session['user_role'] = usuario['cargo']
 
-    return redirect('/dashboard')  # Ou onde você quer direcionar após login
+    return redirect('/checkin')  # ✅ Redireciona para página segura — não para /dashboard que não existe
 
-@google.tokengetter
-def get_google_oauth_token():
-    return session.get('google_token')
-
-# ✅ RODA LOCALMENTE
+# ✅ 19. RODA LOCALMENTE
 if __name__ == '__main__':
     port = int(os.getenv('PORT', 5000))
     app.run(host='0.0.0.0', port=port, debug=False)
