@@ -520,53 +520,69 @@ def login_google():
 
 @app.route('/login/google/callback')
 def authorized():
-    token = google.authorize_access_token()
-    if not token:
-        return jsonify({"error": "Acesso negado."}), 400
+    try:
+        # ✅ Tenta obter o token de acesso
+        token = google.authorize_access_token()
+        if not token:
+            return jsonify({"error": "Falha ao obter token de acesso."}), 400
 
-    resp = google.get('https://www.googleapis.com/oauth2/v1/userinfo')
-    userinfo = resp.json()
+        # ✅ Usa o token para buscar informações do usuário
+        resp = google.get('https://www.googleapis.com/oauth2/v2/userinfo')
+        userinfo = resp.json()
 
-    email = userinfo.get('email')
-    nome = userinfo.get('name')
+        # ✅ Extrai os dados necessários
+        email = userinfo.get('email')
+        nome = userinfo.get('name')
 
-    if not email:
-        return jsonify({"error": "Email não disponível."}), 400
+        if not email:
+            return jsonify({"error": "Email não disponível no perfil do Google."}), 400
 
-    # ✅ Busca ou cria usuário no banco
-    conn = get_db_connection()
-    cursor = conn.cursor(dictionary=True)
+        # ✅ Busca ou cria usuário no banco
+        conn = get_db_connection()
+        cursor = conn.cursor(dictionary=True)
 
-    cursor.execute("SELECT id, nome, email, tipo_usuario FROM usuarios WHERE email = %s", (email,))
-    usuario = cursor.fetchone()
+        cursor.execute("SELECT id, nome, email, tipo_usuario FROM usuarios WHERE email = %s", (email,))
+        usuario = cursor.fetchone()
 
-    if not usuario:
-        cursor.execute("""
-            INSERT INTO usuarios (nome, email, tipo_usuario, ativo, created_at) 
-            VALUES (%s, %s, %s, TRUE, NOW())
-        """, (nome, email, 'Voluntário'))
+        if not usuario:
+            cursor.execute("""
+                INSERT INTO usuarios (nome, email, tipo_usuario, ativo, created_at) 
+                VALUES (%s, %s, %s, TRUE, NOW())
+            """, (nome, email, 'Voluntário'))
+            conn.commit()
+            usuario_id = cursor.lastrowid
+            usuario = {
+                "id": usuario_id,
+                "nome": nome,
+                "email": email,
+                "cargo": "Voluntário"
+            }
+
+        # ✅ Atualiza último login
+        cursor.execute("UPDATE usuarios SET ultimo_login = NOW() WHERE id = %s", (usuario['id'],))
         conn.commit()
-        usuario_id = cursor.lastrowid
-        usuario = {
-            "id": usuario_id,
-            "nome": nome,
-            "email": email,
-            "cargo": "Voluntário"
-        }
+        cursor.close()
+        conn.close()
 
-    # ✅ Atualiza último login
-    cursor.execute("UPDATE usuarios SET ultimo_login = NOW() WHERE id = %s", (usuario['id'],))
-    conn.commit()
-    cursor.close()
-    conn.close()
+        # ✅ Cria sessão
+        session['user_id'] = usuario['id']
+        session['user_name'] = usuario['nome']
+        session['user_email'] = usuario['email']
+        session['user_role'] = usuario['cargo']
 
-    # ✅ Cria sessão
-    session['user_id'] = usuario['id']
-    session['user_name'] = usuario['nome']
-    session['user_email'] = usuario['email']
-    session['user_role'] = usuario['cargo']
+        return redirect('/checkin')
 
-    return redirect('/checkin')  # ✅ Redireciona para página segura — não para /dashboard que não existe
+    except Exception as e:
+        # ✅ LOG DO ERRO PARA DEPURAÇÃO
+        print(f"🔥 ERRO NO CALLBACK DO GOOGLE: {str(e)}")
+        import traceback
+        traceback.print_exc()
+
+        # ✅ RETORNA ERRO AMIGÁVEL (sem expor detalhes sensíveis)
+        return jsonify({
+            "error": "Erro interno ao processar login com Google. Tente novamente.",
+            "details": str(e)  # Só para desenvolvimento — remova em produção!
+        }), 500
 
 # ✅ 19. RODA LOCALMENTE
 if __name__ == '__main__':
