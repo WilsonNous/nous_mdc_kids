@@ -5,3 +5,4 @@ requests==2.31.0
 python-dotenv==1.0.0
 gunicorn==23.0.0
 Flask-OAuthlib==0.9.6
+Werkzeug==2.3.7
