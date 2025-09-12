@@ -570,7 +570,7 @@ def authorized():
         session['user_email'] = usuario['email']
         session['user_role'] = usuario['tipo_usuario']
 
-        return redirect('/checkin')
+        return redirect('/menu')
 
     except Exception as e:
         # ✅ LOG DO ERRO PARA DEPURAÇÃO
