@@ -26,7 +26,12 @@ def home():
 @app.route('/checkin')
 def checkin_page():
     return send_from_directory('frontend', 'checkin.html')
-
+    
+# ✅ 5. ROTA FALBACK — DEVE VIR ANTES DA ROTA DE ARQUIVOS ESTÁTICOS!
+@app.route('/<path:path>')
+def fallback(path):
+    return send_from_directory('frontend', 'index.html')
+    
 # ✅ 6. ROTA PARA ARQUIVOS ESTÁTICOS
 @app.route('/<path:filename>')
 def static_files(filename):
@@ -408,12 +413,6 @@ def responder_whatsapp(telefone, mensagem):
     except Exception as e:
         print(f"❌ Erro na requisição de resposta: {e}")
         return False
-
-# ✅ ROTA FALBACK — SERVE index.html PARA QUALQUER ROTA NÃO ENCONTRADA
-@app.route('/<path:path>')
-def fallback(path):
-    # Serve o index.html para qualquer rota (checkin.html, alerta-manual.html, etc)
-    return send_from_directory('frontend', 'index.html')
 
 # ✅ RODA LOCALMENTE
 if __name__ == '__main__':
