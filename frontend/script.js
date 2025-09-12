@@ -1,4 +1,3 @@
-// ✅ Função principal que só deve ser chamada DEPOIS que o conteúdo for injetado
 function inicializarCadastro() {
     // Configurações (sem credenciais sensíveis!)
     const CONFIG = {
