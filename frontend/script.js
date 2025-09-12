@@ -1,3 +1,4 @@
+//
 function inicializarCadastro() {
     // Configurações (sem credenciais sensíveis!)
     const CONFIG = {
