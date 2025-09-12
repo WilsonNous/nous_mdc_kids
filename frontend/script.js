@@ -402,6 +402,3 @@ function inicializarCadastro() {
     
     console.log('✅ Sistema de cadastro inicializado (conteúdo carregado)');
 }
-
-// ✅ Exporta a função para ser chamada pelo index.html
-window.inicializarCadastro = inicializarCadastro;
