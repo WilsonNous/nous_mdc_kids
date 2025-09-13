@@ -3,75 +3,38 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>📲 Visualizar QR Code - Kids Alerta</title>
+    <title>📲 Visualizar QR Code - Ministério Infantil Mais de Cristo</title>
     <link rel="stylesheet" href="style.css">
     <!-- ✅ REMOVIDOS OS ESPAÇOS EXTRAS -->
     <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
 </head>
 <body>
-    <!-- ✅ CABEÇALHO FIXO COM MENU DROPDOWN -->
-    <header class="header-unificado">
-        <div class="header-logo">
-            <img src="logo.png" alt="Logo Ministério Infantil" class="logo">
-            <div>
+    <div class="container">
+        <div class="card">
+            <div class="header-logo">
+                <img src="logo.png" alt="Logo Ministério Infantil" class="logo">
                 <h2>Mais de Cristo Canasvieiras</h2>
                 <small>Ministério Infantil - Kids</small>
             </div>
-        </div>
-        <nav class="menu-horizontal">
-            <div class="menu-dropdown">
-                <button class="menu-item">📝 Cadastro</button>
-                <div class="menu-submenu">
-                    <a href="index.html">➕ Nova Criança</a>
-                    <a href="visualizar-qrcode.html">📲 QR Codes</a>
-                </div>
-            </div>
-            <div class="menu-dropdown">
-                <button class="menu-item">✅ Check-in</button>
-                <div class="menu-submenu">
-                    <a href="checkin.html">📱 Presencial</a>
-                    <a href="checkin-auto.html">⚡ Automático</a>
-                </div>
-            </div>
-            <div class="menu-dropdown">
-                <button class="menu-item">🔔 Alertas</button>
-                <div class="menu-submenu">
-                    <a href="alerta-manual.html">🆘 Manual</a>
-                    <a href="historico-alertas.html">📊 Histórico</a>
-                </div>
-            </div>
-            <div class="menu-dropdown">
-                <button class="menu-item">📊 Relatórios</button>
-                <div class="menu-submenu">
-                    <a href="relatorios.html">📈 Geral</a>
-                    <a href="relatorio-presenca.html">✅ Presença</a>
-                    <a href="relatorio-alertas.html">🚨 Alertas</a>
-                </div>
-            </div>
-        </nav>
-    </header>
 
-    <div class="container">
-        <div class="card">
             <h1>📲 Visualizar QR Code</h1>
             <p>Selecione uma criança para visualizar ou reenviar seu QR Code.</p>
-            
-            <select id="selectCrianca" style="width: 100%; padding: 12px; margin: 20px 0; border-radius: 8px; border: 2px solid #007BFF;">
+
+            <select id="selectCrianca" style="width: 100%; padding: 15px; margin: 20px 0; border-radius: 8px; border: 2px solid rgba(255,255,255,0.3); background: rgba(255,255,255,0.1); color: white; font-size: 1rem;">
                 <option value="">Selecione uma criança...</option>
             </select>
-            
-            <div id="qrcodeContainer" style="display: none; text-align: center; margin: 30px 0;">
-                <h3>QR Code para Check-in</h3>
+
+            <div id="qrcodeContainer" style="display: none; text-align: center; margin: 30px 0; padding: 20px; background: rgba(255,255,255,0.08); border-radius: 12px;">
+                <h3>QR Code para Check-in Automático</h3>
                 <div id="qrcode" style="margin: 20px auto; width: 200px; height: 200px;"></div>
                 <p><strong>Código: <span id="codigoExibido"></span></strong></p>
-                <button id="btnReenviar" class="btn-alerta" style="margin-top: 15px; width: 100%;">
+                <button id="btnReenviar" class="btn-alerta" style="margin-top: 15px; width: 100%; padding: 14px; font-size: 1rem;">
                     📲 Reenviar QR Code por WhatsApp
                 </button>
             </div>
-            <!-- ✅ Botão Voltar ao Menu -->
-            <div style="margin-top: 30px; text-align: center;">
-                <a href="menu.html" class="btn-voltar">🏠 Voltar ao Menu Principal</a>
-            </div>
+
+            <!-- ✅ BOTÃO ÚNICO: VOLTAR AO MENU -->
+            <a href="/menu" class="btn-voltar">🏠 Voltar ao Menu Principal</a>
         </div>
     </div>
 
@@ -83,121 +46,151 @@
         </div>
     </footer>
 
-    <!-- ✅ ESTILOS DO MENU DROPDOWN -->
     <style>
-        /* ✅ Menu Dropdown */
-        .menu-dropdown {
-            position: relative;
-            display: inline-block;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
         }
 
-        .menu-dropdown .menu-item {
-            background: #007BFF;
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
             color: white;
-            padding: 8px 16px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 500px;
+            text-align: center;
+        }
+
+        .header-logo {
+            margin-bottom: 30px;
+        }
+
+        .logo {
+            max-width: 120px;
+            margin-bottom: 10px;
+        }
+
+        .card {
+            background: rgba(255,255,255,0.1);
+            padding: 40px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+        }
+
+        h1 {
+            color: white;
+            margin-bottom: 15px;
+            font-size: 1.8rem;
+        }
+
+        p {
+            color: rgba(255,255,255,0.9);
+            margin-bottom: 30px;
+            font-size: 1.1rem;
+        }
+
+        select {
+            width: 100%;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 8px;
+            border: 2px solid rgba(255,255,255,0.3);
+            background: rgba(255,255,255,0.1);
+            color: white;
+            font-size: 1rem;
+            transition: border 0.3s;
+        }
+
+        select:focus {
+            outline: none;
+            border-color: #fff;
+        }
+
+        #qrcodeContainer {
+            margin: 30px 0;
+            padding: 20px;
+            background: rgba(255,255,255,0.08);
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        #qrcode {
+            margin: 20px auto;
+            width: 200px;
+            height: 200px;
+            background: white;
+            border-radius: 8px;
+            padding: 5px;
+        }
+
+        #codigoExibido {
+            font-weight: bold;
+            color: #f8f9fa;
+            font-size: 1.2rem;
+            letter-spacing: 1px;
+        }
+
+        .btn-alerta {
+            width: 100%;
+            padding: 14px;
+            background: #e74c3c;
+            color: white;
             border: none;
             border-radius: 8px;
             font-weight: bold;
-            font-size: 0.95rem;
+            font-size: 1rem;
             cursor: pointer;
-            transition: all 0.3s ease;
-            min-width: 120px;
-            text-align: center;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 5px;
+            transition: background 0.3s, transform 0.2s;
+            margin-top: 15px;
         }
 
-        .menu-dropdown .menu-item:hover,
-        .menu-dropdown .menu-item.active {
-            background: #E6007A;
+        .btn-alerta:hover {
+            background: #c0392b;
             transform: translateY(-2px);
         }
 
-        /* ✅ Submenu */
-        .menu-submenu {
-            display: none;
-            position: absolute;
-            top: 100%;
-            left: 0;
-            background: white;
-            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
-            border-radius: 8px;
-            min-width: 200px;
-            z-index: 1000;
-            padding: 10px 0;
-            animation: fadeIn 0.2s ease;
-        }
-
-        .menu-dropdown:hover .menu-submenu,
-        .menu-dropdown:focus-within .menu-submenu {
+        /* ✅ Botão Voltar ao Menu */
+        .btn-voltar {
             display: block;
-        }
-
-        .menu-submenu a {
-            display: block;
-            padding: 10px 20px;
-            color: #003366;
+            margin-top: 40px;
+            color: #ecf0f1;
             text-decoration: none;
-            transition: all 0.3s ease;
-            font-size: 0.9rem;
+            font-size: 1rem;
+            padding: 12px 24px;
+            border: 1px solid #ecf0f1;
+            border-radius: 8px;
+            transition: background 0.3s;
+            font-weight: bold;
         }
 
-        .menu-submenu a:hover {
-            background: #f8f9fa;
-            color: #E6007A;
-            padding-left: 25px;
-        }
-
-        /* ✅ Animação */
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* ✅ Mobile */
-        @media (max-width: 767px) {
-            .menu-horizontal {
-                flex-direction: column;
-                align-items: stretch;
-                gap: 8px;
-            }
-            
-            .menu-dropdown {
-                width: 100%;
-            }
-            
-            .menu-dropdown .menu-item {
-                width: 100%;
-                justify-content: space-between;
-            }
-            
-            .menu-submenu {
-                position: static;
-                box-shadow: none;
-                border-radius: 0;
-                border-bottom: 1px solid #eee;
-            }
-            
-            .menu-submenu a {
-                padding-left: 40px;
-            }
+        .btn-voltar:hover {
+            background: rgba(255,255,255,0.1);
         }
 
         /* ✅ Rodapé */
         .footer {
+            margin-top: 50px;
             background: #1a253d;
             color: white;
             text-align: center;
             padding: 20px 0;
-            margin-top: 50px;
+            font-size: 0.9rem;
+            opacity: 0.9;
         }
 
         .footer p {
             margin: 5px 0;
-            font-size: 0.9rem;
-            opacity: 0.9;
         }
     </style>
 
@@ -214,6 +207,11 @@
                 const response = await fetch('/listar-criancas');
                 const data = await response.json();
                 
+                if (!data.success || !data.criancas.length) {
+                    selectCrianca.innerHTML = '<option value="">❌ Nenhuma criança cadastrada</option>';
+                    return;
+                }
+
                 data.criancas.forEach(crianca => {
                     const option = document.createElement('option');
                     option.value = crianca.id;
@@ -223,6 +221,7 @@
                 });
             } catch (error) {
                 console.error('Erro ao carregar crianças:', error);
+                selectCrianca.innerHTML = '<option value="">❌ Erro ao carregar crianças</option>';
             }
 
             // Quando seleciona uma criança
@@ -241,7 +240,10 @@
                 // Gera QR Code
                 qrcodeDiv.innerHTML = '';
                 QRCode.toCanvas(qrcodeDiv, urlCheckin, { width: 200 }, function (error) {
-                    if (error) console.error(error);
+                    if (error) {
+                        console.error('Erro ao gerar QR Code:', error);
+                        alert('❌ Erro ao gerar QR Code. Tente novamente.');
+                    }
                 });
                 
                 codigoExibido.textContent = codigoCheckin;
@@ -250,6 +252,11 @@
                 // Configura botão de reenvio
                 btnReenviar.onclick = () => {
                     const canvas = qrcodeDiv.querySelector('canvas');
+                    if (!canvas) {
+                        alert('⚠️ QR Code não gerado ainda.');
+                        return;
+                    }
+                    
                     const qrBase64 = canvas.toDataURL("image/png");
                     
                     fetch('/enviar-qrcode', {
@@ -269,6 +276,9 @@
                         } else {
                             alert('❌ Erro ao reenviar: ' + data.error);
                         }
+                    })
+                    .catch(() => {
+                        alert('❌ Falha na conexão. Verifique sua rede.');
                     });
                 };
             });
