@@ -33,7 +33,17 @@ def checkin_page():
 @app.route('/menu')
 def menu_page():
     return send_from_directory('frontend', 'menu.html')
+    
+# ✅ 6. ROTA PARA ARQUIVOS ESTÁTICOS
+@app.route('/<path:filename>')
+def static_files(filename):
+    return send_from_directory('frontend', filename)
 
+# ✅ 7. ROTA FALBACK
+@app.route('/<path:path>')
+def fallback(path):
+    return send_from_directory('frontend', 'login.html')
+    
 # ✅ 8. FUNÇÃO DE ENVIO DE WHATSAPP — AJUSTADA
 def enviar_whatsapp_alerta(crianca_id, motivo="Está precisando de você"):
     conn = get_db_connection()
