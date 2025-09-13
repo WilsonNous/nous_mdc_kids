@@ -129,21 +129,29 @@
             text-align: left;
         }
 
+        /* ✅ MELHORIAS CRÍTICAS NOS INPUTS */
         input, select, textarea {
             width: 100%;
             padding: 15px;
             margin: 10px 0;
-            border: 2px solid rgba(255,255,255,0.3);
+            border: 1px solid #e0e0e0;         /* Bordas claras */
             border-radius: 8px;
-            background: rgba(255,255,255,0.1);
-            color: white;
+            background: white;                  /* Fundo BRANCO — alta legibilidade */
+            color: #333;                        /* Texto preto */
             font-size: 1rem;
-            transition: border 0.3s;
+            transition: border 0.3s, box-shadow 0.3s;
         }
 
         input:focus, select:focus, textarea:focus {
             outline: none;
-            border-color: #fff;
+            border-color: #007BFF;
+            box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+        }
+
+        /* ✅ Placeholder mais visível */
+        input::placeholder, textarea::placeholder {
+            color: #aaa;
+            opacity: 1;
         }
 
         button#btnSubmit {
