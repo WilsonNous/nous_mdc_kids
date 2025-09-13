@@ -68,7 +68,7 @@
         </div>
     </div>
 
-    <!-- ✅ RODAPÉ -->
+    <!-- ✅ RODAPÉ FIXADO NO FUNDO DA PÁGINA -->
     <footer class="footer">
         <div class="container">
             <p>© 2025 Ministério Infantil - Igreja Mais de Cristo Canasvieiras</p>
@@ -77,28 +77,31 @@
     </footer>
 
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Arial', sans-serif;
+        /* ✅ NOVO: CONFIGURAÇÃO GLOBAL PARA RODAPÉ FIXO */
+        html {
+            height: 100%;
         }
 
         body {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
+            min-height: 100vh; /* ✅ FORÇA A ALTURA MÍNIMA DA PÁGINA */
             display: flex;
-            flex-direction: column;
+            flex-direction: column; /* ✅ TORNAR O BODY UM CONTAINER FLEXÍVEL */
             align-items: center;
             justify-content: center;
             padding: 20px;
             color: white;
+            margin: 0; /* Remove margem padrão */
         }
 
         .container {
             width: 100%;
             max-width: 500px;
             text-align: center;
+            flex: 1; /* ✅ FAZ O CONTAINER CRESCER E OCUPAR ESPAÇO DISPONÍVEL */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
         }
 
         .header-logo {
@@ -116,6 +119,10 @@
             border-radius: 15px;
             backdrop-filter: blur(10px);
             box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+            flex: 1; /* Permite que o card ocupe espaço conforme necessário */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
         }
 
         .header h1 {
@@ -243,15 +250,16 @@
             background: rgba(255,255,255,0.1);
         }
 
-        /* ✅ Rodapé */
+        /* ✅ RODAPÉ FIXADO NO FUNDO */
         .footer {
-            margin-top: 50px;
+            margin-top: auto; /* ✅ FORÇA O RODAPÉ A IR PARA O FINAL */
             background: #1a253d;
             color: white;
             text-align: center;
             padding: 20px 0;
             font-size: 0.9rem;
             opacity: 0.9;
+            width: 100%;
         }
 
         .footer p {
