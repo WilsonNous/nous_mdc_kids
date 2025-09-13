@@ -3,14 +3,82 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>✅ Check-in - Kids Alerta | Mais de Cristo Canasvieiras</title>
+    <title>✅ Check-in Presencial - Ministério Infantil Mais de Cristo</title>
     <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header-logo">
+            <img src="logo.png" alt="Logo Ministério Infantil" class="logo">
+            <h2>Mais de Cristo Canasvieiras</h2>
+            <small>Ministério Infantil - Kids</small>
+        </div>
+
+        <div class="card">
+            <h1>✅ Check-in no Cultinho Kids</h1>
+            <p>Selecione a criança ou cadastre uma nova</p>
+
+            <!-- ✅ BOTÃO PARA CADASTRAR NOVO -->
+            <button id="btnCadastrarNova" class="btn-cadastrar" style="width: 100%; padding: 16px; background: #2ecc71; color: white; border: none; border-radius: 8px; font-weight: bold; font-size: 1.1rem; cursor: pointer; margin: 25px 0; transition: background 0.3s, transform 0.2s;">
+                ➕ Cadastrar Nova Criança
+            </button>
+
+            <!-- ✅ CAMPO DE BUSCA -->
+            <div class="form-group" style="margin: 20px 0; text-align: left;">
+                <label for="buscaCrianca" style="display: block; margin-bottom: 8px; color: #f8f9fa; font-weight: bold;">🔍 Buscar criança por nome ou turma</label>
+                <input type="text" id="buscaCrianca" placeholder="Digite o nome ou turma..." style="width: 100%; padding: 15px; margin: 10px 0; border: 1px solid #e0e0e0; border-radius: 8px; background: white; color: #333; font-size: 1rem;">
+            </div>
+
+            <!-- ✅ CAMPO DE CÓDIGO -->
+            <div class="form-group" style="margin: 20px 0; text-align: left;">
+                <label for="codigoCheckin" style="display: block; margin-bottom: 8px; color: #f8f9fa; font-weight: bold;">🔢 Digite o código da criança (ex: CHK-000123)</label>
+                <input type="text" id="codigoCheckin" placeholder="CHK-000123" style="width: 100%; padding: 15px; margin: 10px 0; border: 1px solid #e0e0e0; border-radius: 8px; background: white; color: #333; font-size: 1rem;">
+                <button id="btnCheckinCodigo" class="btn-checkin" style="width: 100%; padding: 16px; background: #3498db; color: white; border: none; border-radius: 8px; font-weight: bold; font-size: 1.1rem; cursor: pointer; margin: 25px 0; transition: background 0.3s, transform 0.2s;">✅ Fazer Check-in por Código</button>
+            </div>
+
+            <!-- ✅ ÁREA DE LISTA -->
+            <div id="listaCriancas" style="margin: 25px 0; text-align: left; max-height: 200px; overflow-y: auto; background: rgba(255,255,255,0.08); padding: 15px; border-radius: 10px; font-size: 0.95rem;">
+                <p>Carregando lista de crianças...</p>
+            </div>
+
+            <!-- ✅ ÁREA DE ALERTA (só aparece após check-in) -->
+            <div id="areaAlerta" style="display: none; background: white; padding: 20px; border-radius: 12px; margin: 25px 0; box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
+                <h3 style="color: #667eea; margin: 0 0 15px 0; font-size: 1.3rem; font-weight: 600; border-bottom: 1px solid rgba(102, 126, 234, 0.3); padding-bottom: 8px;">🚨 A criança não está se adaptando?</h3>
+                <p style="color: #333; margin-bottom: 15px;">Selecione o motivo e avise os pais:</p>
+                <select id="motivoAlerta" style="width: 100%; padding: 15px; margin: 10px 0; border: 1px solid #e0e0e0; border-radius: 8px; background: white; color: #333; font-size: 1rem;">
+                    <option value="">Escolha o motivo...</option>
+                    <option value="Está chorando muito">Está chorando muito</option>
+                    <option value="Pediu pela mãe/pai">Pediu pela mãe/pai</option>
+                    <option value="Não quer participar">Não quer participar</option>
+                    <option value="Está com medo">Está com medo</option>
+                    <option value="Outro">Outro</option>
+                </select>
+                <button id="btnAlerta" class="btn-alerta" style="width: 100%; padding: 16px; background: #e74c3c; color: white; border: none; border-radius: 8px; font-weight: bold; font-size: 1.1rem; cursor: pointer; margin: 25px 0; transition: background 0.3s, transform 0.2s;">🔔 AVISAR PAIS AGORA</button>
+            </div>
+
+            <div id="mensagemCheckin" class="mensagem"></div>
+
+            <!-- ✅ Botão Único: Voltar ao Menu -->
+            <a href="/menu" class="btn-voltar">🏠 Voltar ao Menu Principal</a>
+        </div>
+    </div>
+
+    <!-- ✅ RODAPÉ FIXADO -->
+    <footer class="footer">
+        <p>© 2025 Ministério Infantil - Igreja Mais de Cristo Canasvieiras</p>
+        <p>Desenvolvido com ❤️ para servir às crianças e suas famílias</p>
+    </footer>
+
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
             font-family: 'Arial', sans-serif;
+        }
+
+        html {
+            height: 100%;
         }
 
         body {
@@ -22,21 +90,25 @@
             justify-content: center;
             padding: 20px;
             color: white;
+            margin: 0;
         }
 
         .container {
             width: 100%;
             max-width: 500px;
             text-align: center;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
         }
 
         .header-logo {
-            text-align: center;
             margin-bottom: 30px;
         }
 
         .logo {
-            max-width: 150px;
+            max-width: 120px;
             margin-bottom: 10px;
         }
 
@@ -46,6 +118,10 @@
             border-radius: 15px;
             backdrop-filter: blur(10px);
             box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
         }
 
         h1 {
@@ -105,21 +181,6 @@
             transform: translateY(-2px);
         }
 
-        .btn-recarregar {
-            background: #f39c12;
-            color: white;
-        }
-
-        .btn-recarregar:hover {
-            background: #d35400;
-            transform: translateY(-2px);
-        }
-
-        .form-group {
-            margin: 20px 0;
-            text-align: left;
-        }
-
         .form-group label {
             display: block;
             margin-bottom: 8px;
@@ -131,10 +192,10 @@
         .form-group select {
             width: 100%;
             padding: 15px;
-            border: 2px solid rgba(255,255,255,0.3);
+            border: 1px solid #e0e0e0;
             border-radius: 8px;
-            background: rgba(255,255,255,0.1);
-            color: white;
+            background: white;
+            color: #333;
             font-size: 1rem;
             transition: border 0.3s;
         }
@@ -142,21 +203,11 @@
         .form-group input:focus,
         .form-group select:focus {
             outline: none;
-            border-color: #fff;
+            border-color: #007BFF;
+            box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
         }
 
-        #listaCriancas {
-            margin: 25px 0;
-            text-align: left;
-            max-height: 200px;
-            overflow-y: auto;
-            background: rgba(255,255,255,0.08);
-            padding: 15px;
-            border-radius: 10px;
-            font-size: 0.95rem;
-        }
-
-        .crianca-item {
+        #listaCriancas .crianca-item {
             padding: 10px;
             margin: 8px 0;
             background: rgba(255,255,255,0.1);
@@ -165,20 +216,11 @@
             transition: background 0.3s;
         }
 
-        .crianca-item:hover {
+        #listaCriancas .crianca-item:hover {
             background: rgba(255,255,255,0.2);
         }
 
-        #areaAlerta {
-            display: none;
-            margin: 30px 0;
-            padding: 20px;
-            border: 2px dashed #e74c3c;
-            border-radius: 10px;
-            background: rgba(231, 76, 60, 0.1);
-        }
-
-        #mensagemCheckin {
+        .mensagem {
             margin: 20px 0;
             padding: 15px;
             border-radius: 8px;
@@ -198,7 +240,6 @@
             border: 1px solid #f5c6cb;
         }
 
-        /* ✅ Botão Voltar ao Menu */
         .btn-voltar {
             display: block;
             margin-top: 40px;
@@ -216,87 +257,17 @@
             background: rgba(255,255,255,0.1);
         }
 
-        /* ✅ Rodapé */
         .footer {
-            margin-top: 50px;
+            margin-top: auto;
             background: #1a253d;
             color: white;
             text-align: center;
             padding: 20px 0;
             font-size: 0.9rem;
             opacity: 0.9;
-        }
-
-        .footer p {
-            margin: 5px 0;
+            width: 100%;
         }
     </style>
-</head>
-<body>
-
-    <!-- ✅ CABEÇALHO SIMPLES (SEM MENU) -->
-    <div class="container">
-        <div class="header-logo">
-            <img src="logo.png" alt="Logo Ministério Infantil" class="logo">
-            <h2>Mais de Cristo Canasvieiras</h2>
-            <small>Ministério Infantil - Kids</small>
-        </div>
-
-        <!-- ✅ CORPO DA PÁGINA -->
-        <div class="card">
-            <h1>✅ Check-in no Cultinho Kids</h1>
-            <p>Selecione a criança ou cadastre uma nova</p>
-
-            <!-- ✅ BOTÃO PARA CADASTRAR NOVO -->
-            <button id="btnCadastrarNova" class="btn-cadastrar">
-                ➕ Cadastrar Nova Criança
-            </button>
-
-            <!-- ✅ CAMPO DE BUSCA -->
-            <div class="form-group">
-                <label for="buscaCrianca">🔍 Buscar criança por nome ou turma</label>
-                <input type="text" id="buscaCrianca" placeholder="Digite o nome ou turma..." class="busca-input">
-            </div>
-
-            <!-- ✅ CAMPO DE CÓDIGO -->
-            <div class="form-group">
-                <label for="codigoCheckin">🔢 Digite o código da criança (ex: CHK-000123)</label>
-                <input type="text" id="codigoCheckin" placeholder="CHK-000123" class="busca-input">
-                <button id="btnCheckinCodigo" class="btn-checkin">✅ Fazer Check-in por Código</button>
-            </div>
-
-            <!-- ✅ ÁREA DE LISTA -->
-            <div id="listaCriancas">
-                <p>Carregando lista de crianças...</p>
-            </div>
-
-            <!-- ✅ ÁREA DE ALERTA (só aparece após check-in) -->
-            <div id="areaAlerta">
-                <h3>🚨 A criança não está se adaptando?</h3>
-                <p>Selecione o motivo e avise os pais:</p>
-                <select id="motivoAlerta">
-                    <option value="">Escolha o motivo...</option>
-                    <option value="Está chorando muito">Está chorando muito</option>
-                    <option value="Pediu pela mãe/pai">Pediu pela mãe/pai</option>
-                    <option value="Não quer participar">Não quer participar</option>
-                    <option value="Está com medo">Está com medo</option>
-                    <option value="Outro">Outro</option>
-                </select>
-                <button id="btnAlerta" class="btn-alerta">🔔 AVISAR PAIS AGORA</button>
-            </div>
-
-            <div id="mensagemCheckin" class="mensagem"></div>
-
-            <!-- ✅ BOTÃO ÚNICO: VOLTAR AO MENU -->
-            <a href="/menu" class="btn-voltar">🏠 Voltar ao Menu Principal</a>
-        </div>
-    </div>
-
-    <!-- ✅ RODAPÉ -->
-    <footer class="footer">
-        <p>© 2025 Ministério Infantil - Igreja Mais de Cristo Canasvieiras</p>
-        <p>Desenvolvido com ❤️ para servir às crianças e suas famílias</p>
-    </footer>
 
     <script src="checkin.js"></script>
 </body>
