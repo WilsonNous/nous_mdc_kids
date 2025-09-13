@@ -217,6 +217,7 @@
                     option.value = crianca.id;
                     option.textContent = `${crianca.nome} - ${crianca.turma}`;
                     option.dataset.codigo = crianca.codigo_checkin;
+                    option.dataset.telefone = crianca.responsavel_principal_telefone; // ← NOVO!
                     selectCrianca.appendChild(option);
                 });
             } catch (error) {
@@ -259,11 +260,18 @@
                     
                     const qrBase64 = canvas.toDataURL("image/png");
                     
+                    const numero = selectedOption.dataset.telefone;
+
+                    if (!numero) {
+                        alert('⚠️ Nenhum telefone cadastrado para essa criança.');
+                        return;
+                    }
+                    
                     fetch('/enviar-qrcode', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({
-                            numero: '5548998284104',
+                            numero: numero, // ← AGORA É DINÂMICO!
                             base64Image: qrBase64,
                             nomeCrianca: selectedOption.textContent.split(' - ')[0],
                             codigo: codigoCheckin
