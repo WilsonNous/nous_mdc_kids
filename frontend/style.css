@@ -779,3 +779,19 @@ h3 {
     background: #e74c3c;
     color: white;
 }
+
+.status-checkout {
+    background: #2ecc71;
+    color: white;
+    font-size: 0.8rem;
+    line-height: 1.2;
+    padding: 4px 8px;
+    border-radius: 8px;
+    display: inline-block;
+    text-align: center;
+}
+.status-checkout small {
+    display: block;
+    font-weight: normal;
+    opacity: 0.9;
+}
