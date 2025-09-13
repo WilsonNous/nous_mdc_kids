@@ -5,79 +5,265 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>✅ Check-in - Kids Alerta | Mais de Cristo Canasvieiras</title>
     <link rel="stylesheet" href="style.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            color: white;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 500px;
+            text-align: center;
+        }
+
+        .header-logo {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .logo {
+            max-width: 150px;
+            margin-bottom: 10px;
+        }
+
+        .card {
+            background: rgba(255,255,255,0.1);
+            padding: 40px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+        }
+
+        h1 {
+            color: white;
+            margin-bottom: 15px;
+            font-size: 1.8rem;
+        }
+
+        p {
+            color: rgba(255,255,255,0.9);
+            margin-bottom: 30px;
+            font-size: 1.1rem;
+        }
+
+        .btn-cadastrar,
+        .btn-checkin,
+        .btn-alerta,
+        .btn-recarregar {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: transform 0.2s, background 0.3s;
+            margin: 15px 0;
+        }
+
+        .btn-cadastrar {
+            background: #2ecc71;
+            color: white;
+        }
+
+        .btn-cadastrar:hover {
+            background: #27ae60;
+            transform: translateY(-2px);
+        }
+
+        .btn-checkin {
+            background: #3498db;
+            color: white;
+        }
+
+        .btn-checkin:hover {
+            background: #2980b9;
+            transform: translateY(-2px);
+        }
+
+        .btn-alerta {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .btn-alerta:hover {
+            background: #c0392b;
+            transform: translateY(-2px);
+        }
+
+        .btn-recarregar {
+            background: #f39c12;
+            color: white;
+        }
+
+        .btn-recarregar:hover {
+            background: #d35400;
+            transform: translateY(-2px);
+        }
+
+        .form-group {
+            margin: 20px 0;
+            text-align: left;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #f8f9fa;
+            font-weight: bold;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-radius: 8px;
+            background: rgba(255,255,255,0.1);
+            color: white;
+            font-size: 1rem;
+            transition: border 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #fff;
+        }
+
+        #listaCriancas {
+            margin: 25px 0;
+            text-align: left;
+            max-height: 200px;
+            overflow-y: auto;
+            background: rgba(255,255,255,0.08);
+            padding: 15px;
+            border-radius: 10px;
+            font-size: 0.95rem;
+        }
+
+        .crianca-item {
+            padding: 10px;
+            margin: 8px 0;
+            background: rgba(255,255,255,0.1);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .crianca-item:hover {
+            background: rgba(255,255,255,0.2);
+        }
+
+        #areaAlerta {
+            display: none;
+            margin: 30px 0;
+            padding: 20px;
+            border: 2px dashed #e74c3c;
+            border-radius: 10px;
+            background: rgba(231, 76, 60, 0.1);
+        }
+
+        #mensagemCheckin {
+            margin: 20px 0;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .mensagem.sucesso {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .mensagem.erro {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        /* ✅ Botão Voltar ao Menu */
+        .btn-voltar {
+            display: block;
+            margin-top: 40px;
+            color: #ecf0f1;
+            text-decoration: none;
+            font-size: 1rem;
+            padding: 12px 24px;
+            border: 1px solid #ecf0f1;
+            border-radius: 8px;
+            transition: background 0.3s;
+            font-weight: bold;
+        }
+
+        .btn-voltar:hover {
+            background: rgba(255,255,255,0.1);
+        }
+
+        /* ✅ Rodapé */
+        .footer {
+            margin-top: 50px;
+            background: #1a253d;
+            color: white;
+            text-align: center;
+            padding: 20px 0;
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .footer p {
+            margin: 5px 0;
+        }
+    </style>
 </head>
 <body>
-    <!-- ✅ CABEÇALHO FIXO COM MENU DROPDOWN -->
-    <header class="header-unificado">
+
+    <!-- ✅ CABEÇALHO SIMPLES (SEM MENU) -->
+    <div class="container">
         <div class="header-logo">
             <img src="logo.png" alt="Logo Ministério Infantil" class="logo">
-            <div>
-                <h2>Mais de Cristo Canasvieiras</h2>
-                <small>Ministério Infantil - Kids</small>
-            </div>
+            <h2>Mais de Cristo Canasvieiras</h2>
+            <small>Ministério Infantil - Kids</small>
         </div>
-        <nav class="menu-horizontal">
-            <div class="menu-dropdown">
-                <button class="menu-item">📝 Cadastro</button>
-                <div class="menu-submenu">
-                    <a href="index.html">➕ Nova Criança</a>
-                    <a href="visualizar-qrcode.html">📲 QR Codes</a>
-                </div>
-            </div>
-            <div class="menu-dropdown">
-                <button class="menu-item">✅ Check-in</button>
-                <div class="menu-submenu">
-                    <a href="checkin.html">📱 Presencial</a>
-                    <a href="checkin-auto.html">⚡ Automático</a>
-                </div>
-            </div>
-            <div class="menu-dropdown">
-                <button class="menu-item">🔔 Alertas</button>
-                <div class="menu-submenu">
-                    <a href="alerta-manual.html">🆘 Manual</a>
-                    <a href="historico-alertas.html">📊 Histórico</a>
-                </div>
-            </div>
-            <div class="menu-dropdown">
-                <button class="menu-item">📊 Relatórios</button>
-                <div class="menu-submenu">
-                    <a href="relatorios.html">📈 Geral</a>
-                    <a href="relatorio-presenca.html">✅ Presença</a>
-                    <a href="relatorio-alertas.html">🚨 Alertas</a>
-                </div>
-            </div>
-        </nav>
-    </header>
 
-    <div class="container">
+        <!-- ✅ CORPO DA PÁGINA -->
         <div class="card">
-            <div class="header">
-                <h1>✅ Check-in no Cultinho Kids</h1>
-                <p>Selecione a criança ou cadastre uma nova</p>
-            </div>
+            <h1>✅ Check-in no Cultinho Kids</h1>
+            <p>Selecione a criança ou cadastre uma nova</p>
 
             <!-- ✅ BOTÃO PARA CADASTRAR NOVO -->
-            <button id="btnCadastrarNova" class="btn-cadastrar" style="margin-bottom: 20px;">
+            <button id="btnCadastrarNova" class="btn-cadastrar">
                 ➕ Cadastrar Nova Criança
             </button>
 
             <!-- ✅ CAMPO DE BUSCA -->
-            <div class="form-group" style="margin-bottom: 20px;">
+            <div class="form-group">
                 <label for="buscaCrianca">🔍 Buscar criança por nome ou turma</label>
                 <input type="text" id="buscaCrianca" placeholder="Digite o nome ou turma..." class="busca-input">
             </div>
 
             <!-- ✅ CAMPO DE CÓDIGO -->
-            <div class="form-group" style="margin: 20px 0;">
+            <div class="form-group">
                 <label for="codigoCheckin">🔢 Digite o código da criança (ex: CHK-000123)</label>
                 <input type="text" id="codigoCheckin" placeholder="CHK-000123" class="busca-input">
-                <button id="btnCheckinCodigo" class="btn-checkin" style="margin-top: 10px; width: 100%;">✅ Fazer Check-in por Código</button>
+                <button id="btnCheckinCodigo" class="btn-checkin">✅ Fazer Check-in por Código</button>
             </div>
-
-            <!-- ✅ BOTÃO PARA RECARRERGAR (OPCIONAL) -->
-            <button id="btnRecarregar" class="btn-recarregar" style="margin-bottom: 20px; display: none;">
-                🔄 Recarregar Lista
-            </button>
 
             <!-- ✅ ÁREA DE LISTA -->
             <div id="listaCriancas">
@@ -85,10 +271,11 @@
             </div>
 
             <!-- ✅ ÁREA DE ALERTA (só aparece após check-in) -->
-            <div id="areaAlerta" style="display:none; margin-top: 30px; padding: 20px; border: 2px dashed #e74c3c; border-radius: 10px;">
+            <div id="areaAlerta">
                 <h3>🚨 A criança não está se adaptando?</h3>
                 <p>Selecione o motivo e avise os pais:</p>
                 <select id="motivoAlerta">
+                    <option value="">Escolha o motivo...</option>
                     <option value="Está chorando muito">Está chorando muito</option>
                     <option value="Pediu pela mãe/pai">Pediu pela mãe/pai</option>
                     <option value="Não quer participar">Não quer participar</option>
@@ -99,138 +286,17 @@
             </div>
 
             <div id="mensagemCheckin" class="mensagem"></div>
-            <!-- ✅ Botão Voltar ao Menu -->
-            <div style="margin-top: 30px; text-align: center;">
-                <a href="menu.html" class="btn-voltar">🏠 Voltar ao Menu Principal</a>
-            </div>
+
+            <!-- ✅ BOTÃO ÚNICO: VOLTAR AO MENU -->
+            <a href="/menu" class="btn-voltar">🏠 Voltar ao Menu Principal</a>
         </div>
     </div>
 
     <!-- ✅ RODAPÉ -->
     <footer class="footer">
-        <div class="container">
-            <p>© 2025 Ministério Infantil - Igreja Mais de Cristo Canasvieiras</p>
-            <p>Desenvolvido com ❤️ para servir às crianças e suas famílias</p>
-        </div>
+        <p>© 2025 Ministério Infantil - Igreja Mais de Cristo Canasvieiras</p>
+        <p>Desenvolvido com ❤️ para servir às crianças e suas famílias</p>
     </footer>
-
-    <!-- ✅ ESTILOS DO MENU DROPDOWN -->
-    <style>
-        /* ✅ Menu Dropdown */
-        .menu-dropdown {
-            position: relative;
-            display: inline-block;
-        }
-
-        .menu-dropdown .menu-item {
-            background: #007BFF;
-            color: white;
-            padding: 8px 16px;
-            border: none;
-            border-radius: 8px;
-            font-weight: bold;
-            font-size: 0.95rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            min-width: 120px;
-            text-align: center;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 5px;
-        }
-
-        .menu-dropdown .menu-item:hover,
-        .menu-dropdown .menu-item.active {
-            background: #E6007A;
-            transform: translateY(-2px);
-        }
-
-        /* ✅ Submenu */
-        .menu-submenu {
-            display: none;
-            position: absolute;
-            top: 100%;
-            left: 0;
-            background: white;
-            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
-            border-radius: 8px;
-            min-width: 200px;
-            z-index: 1000;
-            padding: 10px 0;
-            animation: fadeIn 0.2s ease;
-        }
-
-        .menu-dropdown:hover .menu-submenu,
-        .menu-dropdown:focus-within .menu-submenu {
-            display: block;
-        }
-
-        .menu-submenu a {
-            display: block;
-            padding: 10px 20px;
-            color: #003366;
-            text-decoration: none;
-            transition: all 0.3s ease;
-            font-size: 0.9rem;
-        }
-
-        .menu-submenu a:hover {
-            background: #f8f9fa;
-            color: #E6007A;
-            padding-left: 25px;
-        }
-
-        /* ✅ Animação */
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* ✅ Mobile */
-        @media (max-width: 767px) {
-            .menu-horizontal {
-                flex-direction: column;
-                align-items: stretch;
-                gap: 8px;
-            }
-            
-            .menu-dropdown {
-                width: 100%;
-            }
-            
-            .menu-dropdown .menu-item {
-                width: 100%;
-                justify-content: space-between;
-            }
-            
-            .menu-submenu {
-                position: static;
-                box-shadow: none;
-                border-radius: 0;
-                border-bottom: 1px solid #eee;
-            }
-            
-            .menu-submenu a {
-                padding-left: 40px;
-            }
-        }
-
-        /* ✅ Rodapé */
-        .footer {
-            background: #1a253d;
-            color: white;
-            text-align: center;
-            padding: 20px 0;
-            margin-top: 50px;
-        }
-
-        .footer p {
-            margin: 5px 0;
-            font-size: 0.9rem;
-            opacity: 0.9;
-        }
-    </style>
 
     <script src="checkin.js"></script>
 </body>
