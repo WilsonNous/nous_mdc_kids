@@ -774,3 +774,8 @@ h3 {
     50% { transform: scale(1.05); }
     100% { transform: scale(1); }
 }
+
+.status-ausente {
+    background: #e74c3c;
+    color: white;
+}
