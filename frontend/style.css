@@ -763,3 +763,14 @@ h3 {
     margin-bottom: 80px;
 }
     position
+
+.btn-checkout.success {
+    background: #2ecc71 !important;
+    animation: pulseSuccess 0.8s ease-in-out;
+}
+
+@keyframes pulseSuccess {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
