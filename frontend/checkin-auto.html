@@ -3,14 +3,47 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>✅ Check-in Automático - Kids Alerta</title>
+    <title>⚡ Check-in Automático - Ministério Infantil Mais de Cristo</title>
     <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header-logo">
+            <img src="logo.png" alt="Logo Ministério Infantil" class="logo">
+            <h2>Mais de Cristo Canasvieiras</h2>
+            <small>Ministério Infantil - Kids</small>
+        </div>
+
+        <div class="card">
+            <h1>⚡ Check-in Automático</h1>
+            <p>Escaneie o QR Code para registrar a presença da criança</p>
+
+            <div id="status" class="loading">
+                <div class="spinner"></div>
+                <p>Processando check-in...</p>
+            </div>
+
+            <!-- ✅ Botão Único: Voltar ao Menu -->
+            <a href="/menu" class="btn-voltar">🏠 Voltar ao Menu Principal</a>
+        </div>
+    </div>
+
+    <!-- ✅ RODAPÉ FIXADO -->
+    <footer class="footer">
+        <p>© 2025 Ministério Infantil - Igreja Mais de Cristo Canasvieiras</p>
+        <p>Desenvolvido com ❤️ para servir às crianças e suas famílias</p>
+    </footer>
+
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
             font-family: 'Arial', sans-serif;
+        }
+
+        html {
+            height: 100%;
         }
 
         body {
@@ -22,12 +55,17 @@
             justify-content: center;
             padding: 20px;
             color: white;
+            margin: 0;
         }
 
         .container {
             width: 100%;
             max-width: 500px;
             text-align: center;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
         }
 
         .header-logo {
@@ -45,12 +83,22 @@
             border-radius: 15px;
             backdrop-filter: blur(10px);
             box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
         }
 
         h1 {
             color: white;
             margin-bottom: 20px;
             font-size: 1.8rem;
+        }
+
+        p {
+            color: rgba(255,255,255,0.9);
+            margin-bottom: 30px;
+            font-size: 1.1rem;
         }
 
         .status {
@@ -60,6 +108,7 @@
             font-size: 1.1rem;
             font-weight: bold;
             line-height: 1.5;
+            text-align: center;
         }
 
         .success {
@@ -118,51 +167,17 @@
             box-shadow: 0 6px 16px rgba(0,0,0,0.15);
         }
 
-        /* ✅ Rodapé */
         .footer {
-            margin-top: 50px;
+            margin-top: auto;
             background: #1a253d;
             color: white;
             text-align: center;
             padding: 20px 0;
             font-size: 0.9rem;
             opacity: 0.9;
-        }
-
-        .footer p {
-            margin: 5px 0;
+            width: 100%;
         }
     </style>
-</head>
-<body>
-
-    <!-- ✅ CABEÇALHO SIMPLES (SEM MENU) -->
-    <div class="container">
-        <div class="header-logo">
-            <img src="logo.png" alt="Logo Ministério Infantil" class="logo">
-            <h2>Mais de Cristo Canasvieiras</h2>
-            <small>Ministério Infantil - Kids</small>
-        </div>
-
-        <!-- ✅ CORPO DA PÁGINA -->
-        <div class="card">
-            <h1>✅ Check-in Automático</h1>
-
-            <div id="status" class="loading">
-                <div class="spinner"></div>
-                <p>Processando check-in...</p>
-            </div>
-
-            <!-- ✅ Botão Voltar ao Menu -->
-            <a href="/menu" class="btn-voltar">🏠 Voltar ao Menu Principal</a>
-        </div>
-    </div>
-
-    <!-- ✅ RODAPÉ -->
-    <footer class="footer">
-        <p>© 2025 Ministério Infantil - Igreja Mais de Cristo Canasvieiras</p>
-        <p>Desenvolvido com ❤️ para servir às crianças e suas famílias</p>
-    </footer>
 
     <script>
         document.addEventListener('DOMContentLoaded', async () => {
