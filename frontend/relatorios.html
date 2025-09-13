@@ -20,13 +20,13 @@
                 <p>Acompanhe os dados das crianças e alertas com sabedoria</p>
             </div>
 
-            <!-- ✅ NOVO: FILTROS DE TURMA E DATA -->
-            <div style="background: rgba(255,255,255,0.1); padding: 20px; border-radius: 12px; margin: 25px 0; text-align: left;">
-                <h3>📋 Filtros de Presença</h3>
+            <!-- ✅ FILTROS DENTRO DO CARD, COM MESMO ESTILO -->
+            <div style="background: white; padding: 20px; border-radius: 12px; margin: 25px 0; box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
+                <h3 style="color: #667eea; margin: 0 0 15px 0; font-size: 1.3rem; font-weight: 600; border-bottom: 1px solid rgba(102, 126, 234, 0.3); padding-bottom: 8px;">📋 Filtros de Presença</h3>
                 <div style="display: flex; gap: 20px; align-items: center; flex-wrap: wrap;">
-                    <div>
-                        <label for="filtroTurma" style="display: block; margin-bottom: 5px; color: #f8f9fa; font-weight: bold;">Turma</label>
-                        <select id="filtroTurma" style="padding: 10px; border: 1px solid #e0e0e0; border-radius: 8px; background: white; color: #333; font-size: 1rem;">
+                    <div style="flex: 1; min-width: 200px;">
+                        <label for="filtroTurma" style="display: block; margin-bottom: 5px; color: #333; font-weight: bold;">Turma</label>
+                        <select id="filtroTurma" style="width: 100%; padding: 12px; border: 1px solid #e0e0e0; border-radius: 8px; background: white; color: #333; font-size: 1rem;">
                             <option value="">Todas as turmas</option>
                             <option value="2-3 anos">2-3 anos</option>
                             <option value="4-5 anos">4-5 anos</option>
@@ -35,24 +35,24 @@
                         </select>
                     </div>
 
-                    <div>
-                        <label for="filtroData" style="display: block; margin-bottom: 5px; color: #f8f9fa; font-weight: bold;">Data</label>
-                        <input type="date" id="filtroData" style="padding: 10px; border: 1px solid #e0e0e0; border-radius: 8px; background: white; color: #333; font-size: 1rem;">
+                    <div style="flex: 1; min-width: 200px;">
+                        <label for="filtroData" style="display: block; margin-bottom: 5px; color: #333; font-weight: bold;">Data</label>
+                        <input type="date" id="filtroData" style="width: 100%; padding: 12px; border: 1px solid #e0e0e0; border-radius: 8px; background: white; color: #333; font-size: 1rem;">
                     </div>
 
-                    <button id="btnFiltrarPresenca" class="btn-relatorio" style="margin-top: 25px;">🔍 Filtrar Presença</button>
+                    <button id="btnFiltrarPresenca" class="btn-relatorio" style="margin-top: 25px; width: 100%; max-width: 180px;">🔍 Filtrar Presença</button>
                 </div>
             </div>
 
             <!-- ✅ BOTÃO DE RELATÓRIO GERAL -->
-            <div id="relatorio">
+            <div id="relatorio" style="margin-top: 25px;">
                 <button id="btnCarregarRelatorio" class="btn-relatorio">🔄 Atualizar Relatório Geral</button>
                 <div id="conteudoRelatorio" style="margin-top: 20px;"></div>
             </div>
 
             <!-- ✅ TABELA DE PRESENÇA POR TURMA (dinâmica) -->
             <div id="tabelaPresenca" style="margin-top: 40px; display: none;">
-                <h3>👥 Presença por Turma — <span id="tituloPresenca"></span></h3>
+                <h3 style="color: #667eea; margin: 0 0 15px 0; font-size: 1.3rem; font-weight: 600; border-bottom: 1px solid rgba(102, 126, 234, 0.3); padding-bottom: 8px;">👥 Presença por Turma — <span id="tituloPresenca"></span></h3>
                 <table id="tabelaDadosPresenca" style="width:100%; border-collapse: collapse; margin: 20px 0; background: rgba(255,255,255,0.05); border-radius: 8px; overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
                     <thead>
                         <tr style="background: rgba(255,255,255,0.1);">
@@ -73,12 +73,10 @@
         </div>
     </div>
 
-    <!-- ✅ RODAPÉ -->
+    <!-- ✅ RODAPÉ FIXADO -->
     <footer class="footer">
-        <div class="container">
-            <p>© 2025 Ministério Infantil - Igreja Mais de Cristo Canasvieiras</p>
-            <p>Desenvolvido com ❤️ para servir às crianças e suas famílias</p>
-        </div>
+        <p>© 2025 Ministério Infantil - Igreja Mais de Cristo Canasvieiras</p>
+        <p>Desenvolvido com ❤️ para servir às crianças e suas famílias</p>
     </footer>
 
     <style>
@@ -90,6 +88,10 @@
             font-family: 'Arial', sans-serif;
         }
 
+        html {
+            height: 100%;
+        }
+
         body {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
@@ -99,12 +101,17 @@
             justify-content: center;
             padding: 20px;
             color: white;
+            margin: 0;
         }
 
         .container {
             width: 100%;
             max-width: 900px;
             text-align: center;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
         }
 
         .header-logo {
@@ -122,6 +129,10 @@
             border-radius: 15px;
             backdrop-filter: blur(10px);
             box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
         }
 
         .header h1 {
@@ -147,6 +158,8 @@
             cursor: pointer;
             transition: background 0.3s, transform 0.2s;
             margin: 20px 0;
+            width: 100%;
+            max-width: 250px;
         }
 
         .btn-relatorio:hover {
@@ -218,6 +231,7 @@
         .status-alerta_enviado { background: #e74c3c; }
         .status-pai_veio { background: #f39c12; }
         .status-acalmou_sozinha { background: #3498db; }
+        .status-checkout { background: #2ecc71; }
 
         .mensagem {
             margin: 20px 0;
@@ -260,17 +274,14 @@
         }
 
         .footer {
-            margin-top: 50px;
+            margin-top: auto;
             background: #1a253d;
             color: white;
             text-align: center;
             padding: 20px 0;
             font-size: 0.9rem;
             opacity: 0.9;
-        }
-
-        .footer p {
-            margin: 5px 0;
+            width: 100%;
         }
     </style>
 
