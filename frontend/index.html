@@ -23,25 +23,34 @@
             </div>
 
             <form id="formCadastro">
-                <h3>Dados da Criança</h3>
-                <input type="text" id="nomeCrianca" placeholder="Nome da criança" required>
-                <input type="date" id="dataNascimento" placeholder="Data de nascimento" required>
-                <select id="turma" required>
-                    <option value="">Selecione a turma</option>
-                    <option value="2-3 anos">2-3 anos</option>
-                    <option value="4-5 anos">4-5 anos</option>
-                    <option value="6-8 anos">6-8 anos</option>
-                    <option value="9-11 anos">9-11 anos</option>
-                </select>
-                <textarea id="observacoes" placeholder="Observações (alergias, medos, etc)"></textarea>
+                <!-- ✅ NOVO: BLOCO BRANCO PARA "DADOS DA CRIANÇA" -->
+                <div style="background: white; padding: 20px; border-radius: 12px; margin: 25px 0; box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
+                    <h3 style="color: #333; margin: 0 0 15px 0; font-size: 1.3rem; border-bottom: 1px solid #eee; padding-bottom: 8px;">Dados da Criança</h3>
+                    <input type="text" id="nomeCrianca" placeholder="Nome da criança" required>
+                    <input type="date" id="dataNascimento" placeholder="Data de nascimento" required>
+                    <select id="turma" required>
+                        <option value="">Selecione a turma</option>
+                        <option value="2-3 anos">2-3 anos</option>
+                        <option value="4-5 anos">4-5 anos</option>
+                        <option value="6-8 anos">6-8 anos</option>
+                        <option value="9-11 anos">9-11 anos</option>
+                    </select>
+                    <textarea id="observacoes" placeholder="Observações (alergias, medos, etc)"></textarea>
+                </div>
 
-                <h3>Responsável 1 (Obrigatório)</h3>
-                <input type="text" id="nomeResp1" placeholder="Nome do responsável" required>
-                <input type="tel" id="whatsappResp1" placeholder="(48) 99999-9999" required>
+                <!-- ✅ NOVO: BLOCO BRANCO PARA "RESPONSÁVEL 1" -->
+                <div style="background: white; padding: 20px; border-radius: 12px; margin: 25px 0; box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
+                    <h3 style="color: #333; margin: 0 0 15px 0; font-size: 1.3rem; border-bottom: 1px solid #eee; padding-bottom: 8px;">Responsável 1 (Obrigatório)</h3>
+                    <input type="text" id="nomeResp1" placeholder="Nome do responsável" required>
+                    <input type="tel" id="whatsappResp1" placeholder="(48) 99999-9999" required>
+                </div>
 
-                <h3>Responsável 2 (Opcional)</h3>
-                <input type="text" id="nomeResp2" placeholder="Nome do responsável">
-                <input type="tel" id="whatsappResp2" placeholder="WhatsApp (somente números)">
+                <!-- ✅ NOVO: BLOCO BRANCO PARA "RESPONSÁVEL 2" -->
+                <div style="background: white; padding: 20px; border-radius: 12px; margin: 25px 0; box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
+                    <h3 style="color: #333; margin: 0 0 15px 0; font-size: 1.3rem; border-bottom: 1px solid #eee; padding-bottom: 8px;">Responsável 2 (Opcional)</h3>
+                    <input type="text" id="nomeResp2" placeholder="Nome do responsável">
+                    <input type="tel" id="whatsappResp2" placeholder="WhatsApp (somente números)">
+                </div>
 
                 <button type="submit" id="btnSubmit">✅ Cadastrar Criança</button>
                 
@@ -121,23 +130,15 @@
             font-size: 1.1rem;
         }
 
-        form h3 {
-            color: #f8f9fa;
-            margin: 25px 0 15px;
-            border-bottom: 1px solid rgba(255,255,255,0.2);
-            padding-bottom: 8px;
-            text-align: left;
-        }
-
-        /* ✅ MELHORIAS CRÍTICAS NOS INPUTS */
+        /* ✅ INPUTS E TEXTAREAS — MANTIDOS COM FONTE PRETA E FUNDO BRANCO */
         input, select, textarea {
             width: 100%;
             padding: 15px;
             margin: 10px 0;
-            border: 1px solid #e0e0e0;         /* Bordas claras */
+            border: 1px solid #e0e0e0;
             border-radius: 8px;
-            background: white;                  /* Fundo BRANCO — alta legibilidade */
-            color: #333;                        /* Texto preto */
+            background: white;
+            color: #333;
             font-size: 1rem;
             transition: border 0.3s, box-shadow 0.3s;
         }
@@ -148,7 +149,6 @@
             box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
         }
 
-        /* ✅ Placeholder mais visível */
         input::placeholder, textarea::placeholder {
             color: #aaa;
             opacity: 1;
