@@ -20,9 +20,52 @@
                 <p>Acompanhe os dados das crianças e alertas com sabedoria</p>
             </div>
 
+            <!-- ✅ NOVO: FILTROS DE TURMA E DATA -->
+            <div style="background: rgba(255,255,255,0.1); padding: 20px; border-radius: 12px; margin: 25px 0; text-align: left;">
+                <h3>📋 Filtros de Presença</h3>
+                <div style="display: flex; gap: 20px; align-items: center; flex-wrap: wrap;">
+                    <div>
+                        <label for="filtroTurma" style="display: block; margin-bottom: 5px; color: #f8f9fa; font-weight: bold;">Turma</label>
+                        <select id="filtroTurma" style="padding: 10px; border: 1px solid #e0e0e0; border-radius: 8px; background: white; color: #333; font-size: 1rem;">
+                            <option value="">Todas as turmas</option>
+                            <option value="2-3 anos">2-3 anos</option>
+                            <option value="4-5 anos">4-5 anos</option>
+                            <option value="6-8 anos">6-8 anos</option>
+                            <option value="9-11 anos">9-11 anos</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label for="filtroData" style="display: block; margin-bottom: 5px; color: #f8f9fa; font-weight: bold;">Data</label>
+                        <input type="date" id="filtroData" style="padding: 10px; border: 1px solid #e0e0e0; border-radius: 8px; background: white; color: #333; font-size: 1rem;">
+                    </div>
+
+                    <button id="btnFiltrarPresenca" class="btn-relatorio" style="margin-top: 25px;">🔍 Filtrar Presença</button>
+                </div>
+            </div>
+
+            <!-- ✅ BOTÃO DE RELATÓRIO GERAL -->
             <div id="relatorio">
-                <button id="btnCarregarRelatorio" class="btn-relatorio">🔄 Atualizar Relatório</button>
+                <button id="btnCarregarRelatorio" class="btn-relatorio">🔄 Atualizar Relatório Geral</button>
                 <div id="conteudoRelatorio" style="margin-top: 20px;"></div>
+            </div>
+
+            <!-- ✅ TABELA DE PRESENÇA POR TURMA (dinâmica) -->
+            <div id="tabelaPresenca" style="margin-top: 40px; display: none;">
+                <h3>👥 Presença por Turma — <span id="tituloPresenca"></span></h3>
+                <table id="tabelaDadosPresenca" style="width:100%; border-collapse: collapse; margin: 20px 0; background: rgba(255,255,255,0.05); border-radius: 8px; overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+                    <thead>
+                        <tr style="background: rgba(255,255,255,0.1);">
+                            <th style="padding: 12px; text-align: left; color: #f8f9fa;">Criança</th>
+                            <th style="padding: 12px; text-align: left; color: #f8f9fa;">Turma</th>
+                            <th style="padding: 12px; text-align: left; color: #f8f9fa;">Status</th>
+                            <th style="padding: 12px; text-align: left; color: #f8f9fa;">Último Check-in</th>
+                        </tr>
+                    </thead>
+                    <tbody id="corpoTabelaPresenca">
+                        <tr><td colspan="4" style="text-align: center; padding: 30px; color: #aaa;">Carregando presença...</td></tr>
+                    </tbody>
+                </table>
             </div>
 
             <!-- ✅ BOTÃO ÚNICO: VOLTAR AO MENU -->
@@ -39,6 +82,7 @@
     </footer>
 
     <style>
+        /* ✅ MANTENHA TODO SEU CSS EXISTENTE AQUI — NÃO ALTERE */
         * {
             margin: 0;
             padding: 0;
@@ -198,7 +242,6 @@
             font-size: 0.9rem;
         }
 
-        /* ✅ Botão Voltar ao Menu */
         .btn-voltar {
             display: block;
             margin-top: 40px;
@@ -216,7 +259,6 @@
             background: rgba(255,255,255,0.1);
         }
 
-        /* ✅ Rodapé */
         .footer {
             margin-top: 50px;
             background: #1a253d;
@@ -233,6 +275,74 @@
     </style>
 
     <script>
+        // ✅ INICIALIZA DATA HOJE NO INPUT
+        document.addEventListener('DOMContentLoaded', function() {
+            const hoje = new Date().toISOString().split('T')[0];
+            document.getElementById('filtroData').value = hoje;
+        });
+
+        // ✅ BOTÃO DE FILTRAR PRESENÇA
+        document.getElementById('btnFiltrarPresenca').addEventListener('click', async function() {
+            const btn = this;
+            const turma = document.getElementById('filtroTurma').value;
+            const data = document.getElementById('filtroData').value;
+            const titulo = document.getElementById('tituloPresenca');
+            const corpo = document.getElementById('corpoTabelaPresenca');
+            const tabela = document.getElementById('tabelaPresenca');
+
+            if (!data) {
+                alert('Selecione uma data!');
+                return;
+            }
+
+            btn.disabled = true;
+            btn.textContent = 'Carregando...';
+            corpo.innerHTML = '<tr><td colspan="4" style="text-align: center; padding: 30px; color: #aaa;">Carregando presença...</td></tr>';
+            tabela.style.display = 'none';
+
+            try {
+                const response = await fetch(`/presenca-por-turma?data=${data}${turma ? '&turma=' + turma : ''}`);
+                const dataRes = await response.json();
+
+                if (!dataRes.success) throw new Error(dataRes.error || 'Erro ao carregar presença');
+
+                // Atualiza título
+                const turmaTexto = turma ? `Turma: ${turma}` : 'Todas as turmas';
+                titulo.textContent = `${dataRes.data.length} crianças — ${turmaTexto} em ${new Date(data).toLocaleDateString('pt-BR')}`;
+
+                // Limpa e popula tabela
+                corpo.innerHTML = '';
+                if (dataRes.data.length === 0) {
+                    corpo.innerHTML = '<tr><td colspan="4" style="text-align: center; padding: 30px; color: #aaa;">Nenhuma criança encontrada.</td></tr>';
+                } else {
+                    dataRes.data.forEach(item => {
+                        const statusClass = item.presenca ? 'status-presente' : 'status-ausente';
+                        const statusTexto = item.presenca ? '✅ Presente' : '❌ Ausente';
+                        const ultimoCheckin = item.ultimo_checkin ? new Date(item.ultimo_checkin).toLocaleString('pt-BR') : '—';
+
+                        const row = `
+                            <tr>
+                                <td><strong>${item.nome}</strong></td>
+                                <td>${item.turma}</td>
+                                <td><span class="status-badge ${statusClass}">${statusTexto}</span></td>
+                                <td>${ultimoCheckin}</td>
+                            </tr>
+                        `;
+                        corpo.insertAdjacentHTML('beforeend', row);
+                    });
+                }
+
+                tabela.style.display = 'block';
+
+            } catch (error) {
+                corpo.innerHTML = `<tr><td colspan="4" style="text-align: center; padding: 30px; color: #e74c3c;">❌ Erro: ${error.message}</td></tr>`;
+            } finally {
+                btn.disabled = false;
+                btn.textContent = '🔍 Filtrar Presença';
+            }
+        });
+
+        // ✅ BOTÃO DE RELATÓRIO GERAL (mantido)
         document.getElementById('btnCarregarRelatorio').addEventListener('click', async function() {
             const btn = this;
             const conteudo = document.getElementById('conteudoRelatorio');
@@ -347,7 +457,7 @@
                 conteudo.innerHTML = `<div class="mensagem erro">❌ Erro ao carregar relatório: ${error.message}</div>`;
             } finally {
                 btn.disabled = false;
-                btn.textContent = '🔄 Atualizar Relatório';
+                btn.textContent = '🔄 Atualizar Relatório Geral';
             }
         });
     </script>
