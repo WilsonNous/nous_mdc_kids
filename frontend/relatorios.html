@@ -3,67 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>📊 Relatórios - Kids Alerta</title>
+    <title>📊 Relatórios - Ministério Infantil Mais de Cristo</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <!-- ✅ CABEÇALHO FIXO COM MENU DROPDOWN -->
-    <header class="header-unificado">
-        <div class="header-logo">
-            <img src="logo.png" alt="Logo Ministério Infantil" class="logo">
-            <div>
+    <div class="container">
+        <div class="card">
+            <div class="header-logo">
+                <img src="logo.png" alt="Logo Ministério Infantil" class="logo">
                 <h2>Mais de Cristo Canasvieiras</h2>
                 <small>Ministério Infantil - Kids</small>
             </div>
-        </div>
-        <nav class="menu-horizontal">
-            <div class="menu-dropdown">
-                <button class="menu-item">📝 Cadastro</button>
-                <div class="menu-submenu">
-                    <a href="index.html">➕ Nova Criança</a>
-                    <a href="visualizar-qrcode.html">📲 QR Codes</a>
-                </div>
-            </div>
-            <div class="menu-dropdown">
-                <button class="menu-item">✅ Check-in</button>
-                <div class="menu-submenu">
-                    <a href="checkin.html">📱 Presencial</a>
-                    <a href="checkin-auto.html">⚡ Automático</a>
-                </div>
-            </div>
-            <div class="menu-dropdown">
-                <button class="menu-item">🔔 Alertas</button>
-                <div class="menu-submenu">
-                    <a href="alerta-manual.html">🆘 Manual</a>
-                    <a href="historico-alertas.html">📊 Histórico</a>
-                </div>
-            </div>
-            <div class="menu-dropdown">
-                <button class="menu-item">📊 Relatórios</button>
-                <div class="menu-submenu">
-                    <a href="relatorios.html">📈 Geral</a>
-                    <a href="relatorio-presenca.html">✅ Presença</a>
-                    <a href="relatorio-alertas.html">🚨 Alertas</a>
-                </div>
-            </div>
-        </nav>
-    </header>
 
-    <div class="container">
-        <div class="card">
             <div class="header">
                 <h1>📊 Relatórios do Cultinho Kids</h1>
-                <p>Acompanhe os dados das crianças e alertas</p>
+                <p>Acompanhe os dados das crianças e alertas com sabedoria</p>
             </div>
 
             <div id="relatorio">
-                <button id="btnCarregarRelatorio" class="btn-relatorio">🔄 Carregar Relatório</button>
+                <button id="btnCarregarRelatorio" class="btn-relatorio">🔄 Atualizar Relatório</button>
                 <div id="conteudoRelatorio" style="margin-top: 20px;"></div>
             </div>
-            <!-- ✅ Botão Voltar ao Menu -->
-            <div style="margin-top: 30px; text-align: center;">
-                <a href="menu.html" class="btn-voltar">🏠 Voltar ao Menu Principal</a>
-            </div>
+
+            <!-- ✅ BOTÃO ÚNICO: VOLTAR AO MENU -->
+            <a href="/menu" class="btn-voltar">🏠 Voltar ao Menu Principal</a>
         </div>
     </div>
 
@@ -75,136 +38,197 @@
         </div>
     </footer>
 
-    <!-- ✅ ESTILOS DO MENU DROPDOWN -->
     <style>
-        /* ✅ Menu Dropdown */
-        .menu-dropdown {
-            position: relative;
-            display: inline-block;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
         }
 
-        .menu-dropdown .menu-item {
-            background: #007BFF;
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
             color: white;
-            padding: 8px 16px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 900px;
+            text-align: center;
+        }
+
+        .header-logo {
+            margin-bottom: 30px;
+        }
+
+        .logo {
+            max-width: 120px;
+            margin-bottom: 10px;
+        }
+
+        .card {
+            background: rgba(255,255,255,0.1);
+            padding: 40px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+        }
+
+        .header h1 {
+            color: white;
+            margin-bottom: 15px;
+            font-size: 1.8rem;
+        }
+
+        .header p {
+            color: rgba(255,255,255,0.9);
+            margin-bottom: 30px;
+            font-size: 1.1rem;
+        }
+
+        .btn-relatorio {
+            background: #9b59b6;
+            color: white;
+            padding: 14px 28px;
             border: none;
             border-radius: 8px;
             font-weight: bold;
-            font-size: 0.95rem;
+            font-size: 1.1rem;
             cursor: pointer;
-            transition: all 0.3s ease;
-            min-width: 120px;
-            text-align: center;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 5px;
+            transition: background 0.3s, transform 0.2s;
+            margin: 20px 0;
         }
 
-        .menu-dropdown .menu-item:hover,
-        .menu-dropdown .menu-item.active {
-            background: #E6007A;
+        .btn-relatorio:hover {
+            background: #8e44ad;
             transform: translateY(-2px);
         }
 
-        /* ✅ Submenu */
-        .menu-submenu {
-            display: none;
-            position: absolute;
-            top: 100%;
-            left: 0;
-            background: white;
-            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        #conteudoRelatorio {
+            margin-top: 30px;
+            text-align: left;
+            background: rgba(255,255,255,0.08);
+            padding: 25px;
+            border-radius: 12px;
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        #conteudoRelatorio h2,
+        #conteudoRelatorio h3,
+        #conteudoRelatorio h4 {
+            color: #f8f9fa;
+            margin: 25px 0 15px;
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+            padding-bottom: 8px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: rgba(255,255,255,0.05);
             border-radius: 8px;
-            min-width: 200px;
-            z-index: 1000;
-            padding: 10px 0;
-            animation: fadeIn 0.2s ease;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
 
-        .menu-dropdown:hover .menu-submenu,
-        .menu-dropdown:focus-within .menu-submenu {
-            display: block;
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
         }
 
-        .menu-submenu a {
-            display: block;
-            padding: 10px 20px;
-            color: #003366;
-            text-decoration: none;
-            transition: all 0.3s ease;
+        th {
+            background: rgba(255,255,255,0.1);
+            font-weight: bold;
+            color: #f8f9fa;
+            font-size: 0.95rem;
+        }
+
+        tr:nth-child(even) {
+            background: rgba(255,255,255,0.03);
+        }
+
+        tr:hover {
+            background: rgba(255,255,255,0.08);
+        }
+
+        .status-badge {
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            color: white;
+            display: inline-block;
+            text-transform: capitalize;
+        }
+
+        .status-presente { background: #2ecc71; }
+        .status-alerta_enviado { background: #e74c3c; }
+        .status-pai_veio { background: #f39c12; }
+        .status-acalmou_sozinha { background: #3498db; }
+
+        .mensagem {
+            margin: 20px 0;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .mensagem.erro {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .footer-note {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 2px dashed rgba(255,255,255,0.2);
+            font-style: italic;
+            color: #ccc;
             font-size: 0.9rem;
         }
 
-        .menu-submenu a:hover {
-            background: #f8f9fa;
-            color: #E6007A;
-            padding-left: 25px;
+        /* ✅ Botão Voltar ao Menu */
+        .btn-voltar {
+            display: block;
+            margin-top: 40px;
+            color: #ecf0f1;
+            text-decoration: none;
+            font-size: 1rem;
+            padding: 12px 24px;
+            border: 1px solid #ecf0f1;
+            border-radius: 8px;
+            transition: background 0.3s;
+            font-weight: bold;
         }
 
-        /* ✅ Animação */
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* ✅ Mobile */
-        @media (max-width: 767px) {
-            .menu-horizontal {
-                flex-direction: column;
-                align-items: stretch;
-                gap: 8px;
-            }
-            
-            .menu-dropdown {
-                width: 100%;
-            }
-            
-            .menu-dropdown .menu-item {
-                width: 100%;
-                justify-content: space-between;
-            }
-            
-            .menu-submenu {
-                position: static;
-                box-shadow: none;
-                border-radius: 0;
-                border-bottom: 1px solid #eee;
-            }
-            
-            .menu-submenu a {
-                padding-left: 40px;
-            }
+        .btn-voltar:hover {
+            background: rgba(255,255,255,0.1);
         }
 
         /* ✅ Rodapé */
         .footer {
+            margin-top: 50px;
             background: #1a253d;
             color: white;
             text-align: center;
             padding: 20px 0;
-            margin-top: 50px;
-        }
-
-        .footer p {
-            margin: 5px 0;
             font-size: 0.9rem;
             opacity: 0.9;
         }
 
-        /* ✅ Estilos do relatório */
-        .btn-relatorio {
-            background: #9b59b6;
-            color: white;
-            padding: 12px 24px;
-            border: none;
-            border-radius: 8px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: background 0.3s;
-        }
-        .btn-relatorio:hover {
-            background: #8e44ad;
+        .footer p {
+            margin: 5px 0;
         }
     </style>
 
@@ -215,113 +239,110 @@
             btn.disabled = true;
             btn.textContent = 'Carregando...';
             conteudo.innerHTML = '<p>Buscando dados...</p>';
-    
+
             try {
                 const response = await fetch('/relatorio-checkins');
                 const data = await response.json();
-    
+
                 if (!data.success) throw new Error(data.error || 'Erro desconhecido');
-    
+
                 let html = `
                     <h2>📊 Relatório Gerado em ${data.gerado_em}</h2>
                     <hr>
                     
-                    <h3>👶 Total de Crianças Cadastradas: ${data.total_criancas}</h3>
+                    <h3>👶 Total de Crianças Cadastradas: <strong>${data.total_criancas}</strong></h3>
                     
                     <h4>📈 Frequência por Turma</h4>
-                    <table style="width:100%; border-collapse: collapse; margin: 20px 0; background: #f9f9f9; border-radius: 8px; overflow: hidden;">
+                    <table>
                         <thead>
-                            <tr style="background: #007BFF; color: white;">
-                                <th style="padding: 12px; text-align: left;">Turma</th>
-                                <th style="padding: 12px; text-align: left;">Total</th>
+                            <tr>
+                                <th>Turma</th>
+                                <th>Total</th>
                             </tr>
                         </thead>
                         <tbody>
                 `;
-    
+
                 data.frequencia_por_turma.forEach(turma => {
                     html += `
-                        <tr style="border-bottom: 1px solid #eee;">
-                            <td style="padding: 12px;">${turma.turma}</td>
-                            <td style="padding: 12px; font-weight: bold;">${turma.total}</td>
+                        <tr>
+                            <td>${turma.turma}</td>
+                            <td style="font-weight: bold;">${turma.total}</td>
                         </tr>
                     `;
                 });
-    
+
                 html += `
                         </tbody>
                     </table>
-    
+
                     <h4>✅ Últimos 10 Check-ins</h4>
-                    <table style="width:100%; border-collapse: collapse; margin: 20px 0;">
+                    <table>
                         <thead>
-                            <tr style="background: #27ae60; color: white;">
-                                <th style="padding: 10px; text-align: left;">Criança</th>
-                                <th style="padding: 10px; text-align: left;">Turma</th>
-                                <th style="padding: 10px; text-align: left;">Status</th>
-                                <th style="padding: 10px; text-align: left;">Data/Hora</th>
+                            <tr>
+                                <th>Criança</th>
+                                <th>Turma</th>
+                                <th>Status</th>
+                                <th>Data/Hora</th>
                             </tr>
                         </thead>
                         <tbody>
                 `;
-    
+
                 data.ultimos_checkins.forEach(checkin => {
-                    let statusColor = "#27ae60"; // verde
-                    if (checkin.status === 'alerta_enviado') statusColor = "#e74c3c"; // vermelho
-                    if (checkin.status === 'pai_veio') statusColor = "#f39c12"; // laranja
-                    if (checkin.status === 'acalmou_sozinha') statusColor = "#3498db"; // azul
-    
+                    let statusClass = "status-presente";
+                    if (checkin.status === 'alerta_enviado') statusClass = "status-alerta_enviado";
+                    if (checkin.status === 'pai_veio') statusClass = "status-pai_veio";
+                    if (checkin.status === 'acalmou_sozinha') statusClass = "status-acalmou_sozinha";
+
                     html += `
-                        <tr style="border-bottom: 1px solid #eee;">
-                            <td style="padding: 10px; font-weight: bold;">${checkin.nome}</td>
-                            <td style="padding: 10px;">${checkin.turma}</td>
-                            <td style="padding: 10px;">
-                                <span style="background: ${statusColor}; color: white; padding: 4px 8px; border-radius: 4px; font-size: 0.9rem;">
-                                    ${checkin.status.replace('_', ' ')}
-                                </span>
-                            </td>
-                            <td style="padding: 10px; font-size: 0.9rem;">${new Date(checkin.data_checkin).toLocaleString('pt-BR')}</td>
+                        <tr>
+                            <td><strong>${checkin.nome}</strong></td>
+                            <td>${checkin.turma}</td>
+                            <td><span class="status-badge ${statusClass}">${checkin.status.replace('_', ' ')}</span></td>
+                            <td>${new Date(checkin.data_checkin).toLocaleString('pt-BR')}</td>
                         </tr>
                     `;
                 });
-    
+
                 html += `
                         </tbody>
                     </table>
-    
+
                     <h4>🚨 Últimos 5 Alertas</h4>
-                    <table style="width:100%; border-collapse: collapse; margin: 20px 0;">
+                    <table>
                         <thead>
-                            <tr style="background: #e74c3c; color: white;">
-                                <th style="padding: 10px; text-align: left;">Criança</th>
-                                <th style="padding: 10px; text-align: left;">Motivo</th>
-                                <th style="padding: 10px; text-align: left;">Data/Hora</th>
+                            <tr>
+                                <th>Criança</th>
+                                <th>Motivo</th>
+                                <th>Data/Hora</th>
                             </tr>
                         </thead>
                         <tbody>
                 `;
-    
+
                 data.alertas_recentes.forEach(alerta => {
                     html += `
-                        <tr style="border-bottom: 1px solid #fdd;">
-                            <td style="padding: 10px; font-weight: bold;">${alerta.nome}</td>
-                            <td style="padding: 10px; color: #c0392b;">${alerta.observacao_alerta || '—'}</td>
-                            <td style="padding: 10px; font-size: 0.9rem;">${new Date(alerta.data_checkin).toLocaleString('pt-BR')}</td>
+                        <tr>
+                            <td><strong>${alerta.nome}</strong></td>
+                            <td style="color: #e74c3c;">${alerta.observacao_alerta || '<em>Não informado</em>'}</td>
+                            <td>${new Date(alerta.data_checkin).toLocaleString('pt-BR')}</td>
                         </tr>
                     `;
                 });
-    
+
                 html += `
                         </tbody>
                     </table>
-    
-                    <p style="margin-top: 30px; padding-top: 20px; border-top: 2px dashed #ccc; font-style: italic; color: #666;">
-                        ✨ Relatório gerado com dados reais do banco de dados. Atualize para ver as últimas informações.
+
+                    <p class="footer-note">
+                        ✨ Relatório gerado com dados reais do banco de dados.  
+                        Use essas informações para orar, interceder e cuidar com sabedoria.
                     </p>
                 `;
-    
+
                 conteudo.innerHTML = html;
-    
+
             } catch (error) {
                 conteudo.innerHTML = `<div class="mensagem erro">❌ Erro ao carregar relatório: ${error.message}</div>`;
             } finally {
