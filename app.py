@@ -684,11 +684,23 @@ def presenca_por_turma():
                         ultimo_checkin = chk['data_checkin']
                         break
 
+            # Verifica se houve checkout (e qual foi o motivo)
+            checkout_info = None
+            if not presenca:  # Se não está presente, pode ter feito checkout
+                for chk in checkins_do_dia:
+                    if chk['crianca_id'] == crianca['id'] and chk['status'] == 'checkout':
+                        checkout_info = {
+                            'data': chk['data_checkin'],
+                            'motivo': chk['observacao_alerta'] or 'Retirada'
+                        }
+                        break
+            
             resultado.append({
                 "nome": crianca['nome'],
                 "turma": crianca['turma'],
                 "presenca": presenca,
-                "ultimo_checkin": ultimo_checkin
+                "ultimo_checkin": ultimo_checkin,
+                "checkout_info": checkout_info  # Novo campo!
             })
 
         cursor.close()
