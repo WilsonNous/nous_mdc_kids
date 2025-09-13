@@ -233,13 +233,14 @@ def cadastrar_crianca():
         print(f"📝 Inserindo: nome={data.get('nome')}, codigo={codigo_checkin}")
 
         cursor.execute(
-            "INSERT INTO criancas (nome, data_nascimento, turma, observacoes, codigo_checkin) VALUES (%s, %s, %s, %s, %s)",
+            "INSERT INTO criancas (nome, data_nascimento, turma, observacoes, codigo_checkin, responsavel_principal_telefone) VALUES (%s, %s, %s, %s, %s, %s)",
             (
                 data.get('nome'),
                 data.get('data_nascimento'),
                 data.get('turma'),
                 data.get('observacoes', ''),
-                codigo_checkin
+                codigo_checkin,
+                data.get('whatsappResp1')  # ← Aqui é o novo campo!
             )
         )
         
@@ -288,7 +289,7 @@ def listar_criancas():
         return jsonify({"error": "Erro no banco"}), 500
 
     cursor = conn.cursor(dictionary=True)
-    cursor.execute("SELECT id, nome, turma FROM criancas ORDER BY nome")
+    cursor.execute("SELECT id, nome, turma, responsavel_principal_telefone FROM criancas ORDER BY nome")
     criancas = cursor.fetchall()
     cursor.close()
     conn.close()
