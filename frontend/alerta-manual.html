@@ -3,14 +3,62 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🔔 Alerta Manual - Kids Alerta</title>
+    <title>🔔 Alerta Manual - Ministério Infantil Mais de Cristo</title>
     <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header-logo">
+            <img src="logo.png" alt="Logo Ministério Infantil" class="logo">
+            <h2>Mais de Cristo Canasvieiras</h2>
+            <small>Ministério Infantil - Kids</small>
+        </div>
+
+        <div class="card">
+            <h1>🔔 Enviar Alerta Manual</h1>
+            <p>Selecione a criança e avise os pais imediatamente</p>
+
+            <div id="listaCriancas">
+                <p>Carregando lista de crianças...</p>
+            </div>
+
+            <div id="areaAlerta" style="display: none; background: white; padding: 20px; border-radius: 12px; margin: 25px 0; box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
+                <h3 style="color: #667eea; margin: 0 0 15px 0; font-size: 1.3rem; font-weight: 600; border-bottom: 1px solid rgba(102, 126, 234, 0.3); padding-bottom: 8px;">🚨 Motivo do alerta:</h3>
+                <select id="motivoAlerta" style="width: 100%; padding: 15px; margin: 10px 0; border: 1px solid #e0e0e0; border-radius: 8px; background: white; color: #333; font-size: 1rem;">
+                    <option value="">Escolha o motivo...</option>
+                    <option value="Está chorando muito">Está chorando muito</option>
+                    <option value="Pediu pela mãe/pai">Pediu pela mãe/pai</option>
+                    <option value="Não quer participar">Não quer participar</option>
+                    <option value="Está com medo">Está com medo</option>
+                    <option value="Precisa trocar fralda">Precisa trocar fralda</option>
+                    <option value="Outro">Outro</option>
+                </select>
+                <button id="btnAlertaManual" class="btn-alerta" style="width: 100%; padding: 16px; background: #e74c3c; color: white; border: none; border-radius: 8px; font-weight: bold; font-size: 1.1rem; cursor: pointer; margin: 25px 0; transition: background 0.3s, transform 0.2s;">📤 ENVIAR ALERTA AGORA</button>
+            </div>
+
+            <div id="mensagemAlerta" class="mensagem"></div>
+
+            <!-- ✅ Botão Único: Voltar ao Menu -->
+            <a href="/menu" class="btn-voltar">🏠 Voltar ao Menu Principal</a>
+        </div>
+    </div>
+
+    <!-- ✅ RODAPÉ FIXADO -->
+    <footer class="footer">
+        <p>© 2025 Ministério Infantil - Igreja Mais de Cristo Canasvieiras</p>
+        <p>Desenvolvido com ❤️ para servir às crianças e suas famílias</p>
+    </footer>
+
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
             font-family: 'Arial', sans-serif;
+        }
+
+        html {
+            height: 100%;
         }
 
         body {
@@ -22,12 +70,17 @@
             justify-content: center;
             padding: 20px;
             color: white;
+            margin: 0;
         }
 
         .container {
             width: 100%;
             max-width: 500px;
             text-align: center;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
         }
 
         .header-logo {
@@ -45,6 +98,10 @@
             border-radius: 15px;
             backdrop-filter: blur(10px);
             box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
         }
 
         h1 {
@@ -91,31 +148,6 @@
             transform: translateY(-2px);
         }
 
-        #areaAlerta {
-            display: none;
-            margin: 30px 0;
-            padding: 20px;
-            border: 2px dashed #e74c3c;
-            border-radius: 10px;
-            background: rgba(231, 76, 60, 0.1);
-        }
-
-        #areaAlerta h3 {
-            color: #f8f9fa;
-            margin-bottom: 15px;
-        }
-
-        #motivoAlerta {
-            width: 100%;
-            padding: 15px;
-            border: 2px solid rgba(255,255,255,0.3);
-            border-radius: 8px;
-            background: rgba(255,255,255,0.1);
-            color: white;
-            font-size: 1rem;
-            margin-bottom: 15px;
-        }
-
         .btn-alerta {
             width: 100%;
             padding: 16px;
@@ -134,7 +166,7 @@
             transform: translateY(-2px);
         }
 
-        #mensagemAlerta {
+        .mensagem {
             margin: 20px 0;
             padding: 15px;
             border-radius: 8px;
@@ -154,7 +186,6 @@
             border: 1px solid #f5c6cb;
         }
 
-        /* ✅ Botão Voltar ao Menu */
         .btn-voltar {
             display: block;
             margin-top: 40px;
@@ -172,67 +203,17 @@
             background: rgba(255,255,255,0.1);
         }
 
-        /* ✅ Rodapé */
         .footer {
-            margin-top: 50px;
+            margin-top: auto;
             background: #1a253d;
             color: white;
             text-align: center;
             padding: 20px 0;
             font-size: 0.9rem;
             opacity: 0.9;
-        }
-
-        .footer p {
-            margin: 5px 0;
+            width: 100%;
         }
     </style>
-</head>
-<body>
-
-    <!-- ✅ CABEÇALHO SIMPLES (SEM MENU) -->
-    <div class="container">
-        <div class="header-logo">
-            <img src="logo.png" alt="Logo Ministério Infantil" class="logo">
-            <h2>Mais de Cristo Canasvieiras</h2>
-            <small>Ministério Infantil - Kids</small>
-        </div>
-
-        <!-- ✅ CORPO DA PÁGINA -->
-        <div class="card">
-            <h1>🔔 Enviar Alerta Manual</h1>
-            <p>Selecione a criança e avise os pais imediatamente</p>
-
-            <div id="listaCriancas">
-                <p>Carregando lista de crianças...</p>
-            </div>
-
-            <div id="areaAlerta">
-                <h3>🚨 Motivo do alerta:</h3>
-                <select id="motivoAlerta">
-                    <option value="">Escolha o motivo...</option>
-                    <option value="Está chorando muito">Está chorando muito</option>
-                    <option value="Pediu pela mãe/pai">Pediu pela mãe/pai</option>
-                    <option value="Não quer participar">Não quer participar</option>
-                    <option value="Está com medo">Está com medo</option>
-                    <option value="Precisa trocar fralda">Precisa trocar fralda</option>
-                    <option value="Outro">Outro</option>
-                </select>
-                <button id="btnAlertaManual" class="btn-alerta">📤 ENVIAR ALERTA AGORA</button>
-            </div>
-
-            <div id="mensagemAlerta" class="mensagem"></div>
-
-            <!-- ✅ Botão Único: Voltar ao Menu -->
-            <a href="/menu" class="btn-voltar">🏠 Voltar ao Menu Principal</a>
-        </div>
-    </div>
-
-    <!-- ✅ RODAPÉ -->
-    <footer class="footer">
-        <p>© 2025 Ministério Infantil - Igreja Mais de Cristo Canasvieiras</p>
-        <p>Desenvolvido com ❤️ para servir às crianças e suas famílias</p>
-    </footer>
 
     <script>
         let criancaSelecionada = null;
