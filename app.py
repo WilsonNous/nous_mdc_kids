@@ -157,6 +157,50 @@ def registrar_checkin():
         "crianca_turma": crianca[1] if crianca else "Turma não informada"
     }), 201
 
+# ✅ ROTA: CHECKOUT — REGISTRA SAÍDA DA CRIANÇA
+@app.route('/checkout', methods=['POST'])
+def registrar_checkout():
+    data = request.json
+    crianca_id = data.get('crianca_id')
+    responsavel_nome = data.get('responsavel_nome')
+    motivo = data.get('motivo')
+
+    if not all([crianca_id, responsavel_nome, motivo]):
+        return jsonify({"error": "Todos os campos são obrigatórios."}), 400
+
+    conn = get_db_connection()
+    if not conn:
+        return jsonify({"error": "Erro ao conectar ao banco"}), 500
+
+    cursor = conn.cursor()
+
+    # Verifica se a criança existe e está em check-in ativo
+    cursor.execute("SELECT nome FROM criancas WHERE id = %s", (crianca_id,))
+    crianca = cursor.fetchone()
+    if not crianca:
+        cursor.close()
+        conn.close()
+        return jsonify({"error": "Criança não encontrada."}), 404
+
+    # Registra o checkout
+    cursor.execute("""
+        INSERT INTO checkins (crianca_id, status, observacao_alerta, responsavel_retirada)
+        VALUES (%s, %s, %s, %s)
+    """, (crianca_id, 'checkout', motivo, responsavel_nome))
+
+    conn.commit()
+    checkin_id = cursor.lastrowid
+    cursor.close()
+    conn.close()
+
+    return jsonify({
+        "success": True,
+        "checkin_id": checkin_id,
+        "crianca_nome": crianca[0],
+        "responsavel": responsavel_nome,
+        "motivo": motivo
+    }), 201
+
 # ✅ 10. ROTA: CADASTRAR CRIANÇA — ATUALIZADA
 @app.route('/cadastrar-crianca', methods=['POST'])
 def cadastrar_crianca():
