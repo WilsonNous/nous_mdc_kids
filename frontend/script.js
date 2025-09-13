@@ -1,4 +1,3 @@
-//
 function inicializarCadastro() {
     // Configurações (sem credenciais sensíveis!)
     const CONFIG = {
@@ -8,7 +7,7 @@ function inicializarCadastro() {
             enviarQRCode: '/enviar-qrcode' // ✅ Novo endpoint seguro
         },
         timeout: 30000, // 30 segundos
-        debugMode: true // Alterne para false em produção
+        debugMode: false // Alterne para false em produção
     };
 
     // Elementos do DOM — agora só são buscados DEPOIS que o conteúdo é carregado
@@ -312,7 +311,7 @@ function inicializarCadastro() {
             const codigoCheckin = `CHK-${dataCrianca.crianca_id.toString().padStart(6, '0')}`;
             const urlCheckin = `${window.location.origin}/checkin-auto.html?id=${dataCrianca.crianca_id}`;
             
-            // Cria container visual
+            // ✅ CRIA O CONTAINER E INSERE NO DOM ANTES DE GERAR O QR CODE
             const codigoDiv = document.createElement('div');
             codigoDiv.innerHTML = `
                 <div class="card" style="margin-top: 20px; text-align: center;">
@@ -329,36 +328,50 @@ function inicializarCadastro() {
                     </button>
                 </div>
             `;
+            
+            // ✅ INSERE NO DOM PRIMEIRO — ESSE É O PASSO CRÍTICO!
             elementos.mensagem.parentNode.appendChild(codigoDiv);
+
+            // ✅ AGORA QUE ESTÁ NO DOM, BUSCA O ELEMENTO
+            const qrcodeContainer = document.getElementById('qrcode-container');
             
             // ✅ Gera QR Code (lib já carregada no HTML)
-            if (typeof QRCode !== 'undefined') {
-                QRCode.toCanvas(document.getElementById('qrcode-container'), urlCheckin, { width: 160 }, function (error) {
+            if (typeof QRCode !== 'undefined' && qrcodeContainer) {
+                QRCode.toCanvas(qrcodeContainer, urlCheckin, { width: 160 }, function (error) {
                     if (error) {
                         console.error("❌ Erro ao gerar QR Code:", error);
-                        document.getElementById('qrcode-container').innerHTML = '<p style="color: red;">Erro ao gerar QR Code.</p>';
+                        qrcodeContainer.innerHTML = '<p style="color: red;">Erro ao gerar QR Code.</p>';
                         return;
                     }
                     console.log("✅ QR Code gerado com sucesso!");
                     
                     // Adiciona evento ao botão de envio por WhatsApp
-                    document.getElementById('btnEnviarWhatsApp').addEventListener('click', () => {
-                        const numeroWhatsApp = document.getElementById('whatsappResp1').value.replace(/\D/g, '');
-                        
-                        if (!numeroWhatsApp || numeroWhatsApp.length < 10) {
-                            alert('Por favor, verifique o número de WhatsApp do responsável.');
-                            return;
-                        }
-                        
-                        const canvas = document.getElementById('qrcode-container').querySelector('canvas');
-                        const qrBase64 = canvas.toDataURL("image/png");
-                        
-                        enviarQRParaWhatsApp(numeroWhatsApp, qrBase64, crianca.nome, codigoCheckin);
-                    });
+                    const btnEnviarWhatsApp = document.getElementById('btnEnviarWhatsApp');
+                    if (btnEnviarWhatsApp) {
+                        btnEnviarWhatsApp.addEventListener('click', () => {
+                            const numeroWhatsApp = document.getElementById('whatsappResp1').value.replace(/\D/g, '');
+                            
+                            if (!numeroWhatsApp || numeroWhatsApp.length < 10) {
+                                alert('Por favor, verifique o número de WhatsApp do responsável.');
+                                return;
+                            }
+                            
+                            const canvas = qrcodeContainer.querySelector('canvas');
+                            if (!canvas) {
+                                alert('Erro ao obter QR Code para envio.');
+                                return;
+                            }
+                            
+                            const qrBase64 = canvas.toDataURL("image/png");
+                            enviarQRParaWhatsApp(numeroWhatsApp, qrBase64, crianca.nome, codigoCheckin);
+                        });
+                    }
                 });
             } else {
-                console.error("❌ Lib QR Code não carregada!");
-                document.getElementById('qrcode-container').innerHTML = '<p style="color: red;">Erro: Lib QR Code não carregada.</p>';
+                console.error("❌ Lib QR Code não carregada ou container não encontrado!");
+                if (qrcodeContainer) {
+                    qrcodeContainer.innerHTML = '<p style="color: red;">Erro: Lib QR Code não carregada ou container ausente.</p>';
+                }
             }
             
             // Limpa formulário
