@@ -324,8 +324,14 @@
                             <tr>
                                 <td><strong>${item.nome}</strong></td>
                                 <td>${item.turma}</td>
-                                <td><span class="status-badge ${statusClass}">${statusTexto}</span></td>
-                                <td>${ultimoCheckin}</td>
+                                <td>
+                                    ${item.checkout_info ? `
+                                        <span class="status-badge status-checkout">✅ Checkout ok<br><small>${new Date(item.checkout_info.data).toLocaleString('pt-BR')}</small></span>
+                                    ` : `
+                                        <span class="status-badge ${statusClass}">${statusTexto}</span>
+                                    `}
+                                </td>
+                                <td>${item.ultimo_checkin ? new Date(item.ultimo_checkin).toLocaleString('pt-BR') : '—'}</td>
                             </tr>
                         `;
                         corpo.insertAdjacentHTML('beforeend', row);
