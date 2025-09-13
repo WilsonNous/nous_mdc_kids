@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>👋 Checkout - Ministério Infantil Mais de Cristo</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            color: white;
+        }
+
+        .container {
+            max-width: 500px;
+            text-align: center;
+        }
+
+        .header-logo {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .logo {
+            max-width: 150px;
+            margin-bottom: 10px;
+        }
+
+        .card {
+            background: rgba(255,255,255,0.1);
+            padding: 40px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+        }
+
+        h1 {
+            color: white;
+            margin-bottom: 15px;
+        }
+
+        p {
+            color: rgba(255,255,255,0.9);
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin: 20px 0;
+            text-align: left;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #f8f9fa;
+            font-weight: bold;
+        }
+
+        .form-group select,
+        .form-group input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-radius: 8px;
+            background: rgba(255,255,255,0.1);
+            color: white;
+            font-size: 1rem;
+            transition: border 0.3s;
+        }
+
+        .form-group select:focus,
+        .form-group input:focus {
+            outline: none;
+            border-color: #fff;
+        }
+
+        .btn-checkout {
+            background: #2ecc71;
+            color: white;
+            width: 100%;
+            padding: 15px;
+            font-size: 1.1rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.3s, transform 0.2s;
+            font-weight: bold;
+            margin-top: 20px;
+        }
+
+        .btn-checkout:hover {
+            background: #27ae60;
+            transform: translateY(-2px);
+        }
+
+        .btn-back {
+            display: block;
+            margin-top: 30px;
+            color: #ecf0f1;
+            text-decoration: none;
+            font-size: 1rem;
+            padding: 10px;
+            border: 1px solid #ecf0f1;
+            border-radius: 8px;
+            transition: background 0.3s;
+        }
+
+        .btn-back:hover {
+            background: rgba(255,255,255,0.1);
+        }
+
+        .mensagem {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .mensagem.sucesso {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .mensagem.erro {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header-logo">
+            <img src="logo.png" alt="Logo Ministério Infantil" class="logo">
+            <h2>Mais de Cristo Canasvieiras</h2>
+            <small>Ministério Infantil - Kids</small>
+        </div>
+
+        <div class="card">
+            <h1>👋 Checkout da Criança</h1>
+            <p>Registre a saída da criança com carinho.</p>
+
+            <form id="formCheckout">
+                <div class="form-group">
+                    <label for="crianca_id">Criança *</label>
+                    <select id="crianca_id" required>
+                        <option value="">Selecione a criança...</option>
+                        <!-- Opções serão preenchidas via JavaScript -->
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="responsavel_nome">Nome do responsável que retirou *</label>
+                    <input type="text" id="responsavel_nome" placeholder="Ex: Maria Silva" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="motivo">Motivo da saída *</label>
+                    <select id="motivo" required>
+                        <option value="">Escolha...</option>
+                        <option value="pai_veio">Pai veio buscar</option>
+                        <option value="mae_veio">Mãe veio buscar</option>
+                        <option value="avos">Avós vieram buscar</option>
+                        <option value="tio_tia">Tio ou tia veio buscar</option>
+                        <option value="outro">Outro</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="btn-checkout">✅ Registrar Saída</button>
+            </form>
+
+            <a href="/menu" class="btn-back">⬅️ Voltar ao Menu</a>
+
+            <div id="mensagem" class="mensagem"></div>
+        </div>
+    </div>
+
+    <script>
+        // Carregar lista de crianças ativas
+        async function carregarCriancas() {
+            const select = document.getElementById('crianca_id');
+            try {
+                const response = await fetch('/listar-criancas');
+                const data = await response.json();
+
+                if (!data.success) {
+                    throw new Error('Erro ao carregar crianças');
+                }
+
+                data.criancas.forEach(c => {
+                    const option = document.createElement('option');
+                    option.value = c.id;
+                    option.textContent = `${c.nome} (${c.turma})`;
+                    select.appendChild(option);
+                });
+
+            } catch (error) {
+                console.error('❌ Erro:', error);
+                const mensagem = document.getElementById('mensagem');
+                mensagem.className = 'mensagem erro';
+                mensagem.textContent = '⚠️ Não foi possível carregar as crianças. Tente novamente.';
+            }
+        }
+
+        // Enviar checkout
+        document.getElementById('formCheckout').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const criancaId = document.getElementById('crianca_id').value;
+            const responsavelNome = document.getElementById('responsavel_nome').value;
+            const motivo = document.getElementById('motivo').value;
+            const msgDiv = document.getElementById('mensagem');
+
+            if (!criancaId || !responsavelNome || !motivo) {
+                msgDiv.className = 'mensagem erro';
+                msgDiv.textContent = 'Todos os campos são obrigatórios!';
+                return;
+            }
+
+            msgDiv.className = '';
+            msgDiv.textContent = 'Registrando saída...';
+
+            try {
+                const response = await fetch('/checkout', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        crianca_id: criancaId,
+                        responsavel_nome: responsavelNome,
+                        motivo: motivo
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    msgDiv.className = 'mensagem sucesso';
+                    msgDiv.textContent = `✅ ${data.crianca_nome} saiu com ${responsavelNome}!`;
+                    document.getElementById('formCheckout').reset();
+                } else {
+                    throw new Error(data.error || 'Falha ao registrar saída');
+                }
+
+            } catch (error) {
+                msgDiv.className = 'mensagem erro';
+                msgDiv.textContent = '❌ ' + error.message;
+            }
+        });
+
+        // Carrega as crianças ao abrir a página
+        document.addEventListener('DOMContentLoaded', carregarCriancas);
+    </script>
+</body>
+</html>
