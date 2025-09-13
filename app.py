@@ -634,6 +634,81 @@ def authorized():
             "details": str(e)  # Só para desenvolvimento — remova em produção!
         }), 500
 
+# ✅ NOVA ROTA: PRESENÇA POR TURMA E DATA
+@app.route('/presenca-por-turma')
+def presenca_por_turma():
+    try:
+        data_str = request.args.get('data')
+        turma_filtro = request.args.get('turma', '')
+
+        if not data_str:
+            return jsonify({"success": False, "error": "Data obrigatória."}), 400
+
+        # Converte string de data para objeto datetime
+        data_checkin = datetime.strptime(data_str, '%Y-%m-%d').date()
+
+        conn = get_db_connection()
+        if not conn:
+            return jsonify({"success": False, "error": "Erro ao conectar ao banco"}), 500
+
+        cursor = conn.cursor(dictionary=True)
+
+        # ✅ Busca todas as crianças cadastradas
+        if turma_filtro:
+            cursor.execute("SELECT id, nome, turma FROM criancas WHERE turma = %s ORDER BY nome", (turma_filtro,))
+        else:
+            cursor.execute("SELECT id, nome, turma FROM criancas ORDER BY nome")
+        criancas = cursor.fetchall()
+
+        # ✅ Busca todos os check-ins da data selecionada
+        cursor.execute("""
+            SELECT crianca_id, status, data_checkin 
+            FROM checkins 
+            WHERE DATE(data_checkin) = %s AND status IN ('presente', 'alerta_enviado', 'pai_veio', 'acalmou_sozinha')
+        """, (data_checkin,))
+        checkins_do_dia = cursor.fetchall()
+
+        # Cria um set de IDs das crianças que fizeram check-in hoje
+        checkin_ids = {item['crianca_id'] for item in checkins_do_dia}
+
+        # Monta lista final: cada criança com status de presença/ausência
+        resultado = []
+        for crianca in criancas:
+            presenca = crianca['id'] in checkin_ids
+            ultimo_checkin = None
+
+            # Busca o último check-in dessa criança (para mostrar quando foi)
+            if presenca:
+                for chk in checkins_do_dia:
+                    if chk['crianca_id'] == crianca['id']:
+                        ultimo_checkin = chk['data_checkin']
+                        break
+
+            resultado.append({
+                "nome": crianca['nome'],
+                "turma": crianca['turma'],
+                "presenca": presenca,
+                "ultimo_checkin": ultimo_checkin
+            })
+
+        cursor.close()
+        conn.close()
+
+        return jsonify({
+            "success": True,
+            "data": resultado,
+            "data_selecionada": data_str,
+            "turma_selecionada": turma_filtro,
+            "total_criancas": len(resultado),
+            "total_presentes": sum(1 for c in resultado if c['presenca'])
+        })
+
+    except Exception as e:
+        print(f"🔥 ERRO na rota /presenca-por-turma: {str(e)}")
+        import traceback
+        traceback.print_exc()
+        return jsonify({"success": False, "error": f"Erro interno: {str(e)}"}), 500
+
 # ✅ 19. RODA LOCALMENTE
 if __name__ == '__main__':
     port = int(os.getenv('PORT', 5000))
